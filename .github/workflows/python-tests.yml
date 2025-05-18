@@ -2,11 +2,9 @@ name: Python Backend Tests
 
 on:
   push:
-    paths:
-      - "backend/**"
+    branches: [ assignment6-ci ]
   pull_request:
-    paths:
-      - "backend/**"
+    branches: [ master ]
 
 jobs:
   test:
