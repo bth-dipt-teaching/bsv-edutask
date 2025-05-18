@@ -49,4 +49,6 @@ function LoginForm({ Login, Signup }) {
     );
 }
 
-export default LoginForm
+
+export default LoginForm;
+
