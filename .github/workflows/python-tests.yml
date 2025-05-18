@@ -1,12 +1,11 @@
-name: Backend Unit Tests
+name: Run backend tests
 
 on:
   push:
-    paths:
-      - 'backend/**'
+    branches: [ assignment6-ci ]
   pull_request:
-    paths:
-      - 'backend/**'
+    branches: [ master ]
+
 
 jobs:
   test:
