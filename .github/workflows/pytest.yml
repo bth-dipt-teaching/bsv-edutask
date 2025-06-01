@@ -17,11 +17,15 @@ jobs:
               with:
                   python-version: "3.9"
 
+            - name: Change Directory
+              run: |
+                  cd backend
+                  echo "Current Directory: $(pwd)"
+
             - name: Install Dependencies
               run: |
-                cd backend
-                python -m pip install --upgrade pip
-                pip install -r requirements.pip
+                  python -m pip install --upgrade pip
+                  pip install -r requirements.txt
 
             - name: Run unit tests
               run: |
