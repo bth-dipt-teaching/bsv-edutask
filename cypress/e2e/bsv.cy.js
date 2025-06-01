@@ -1,49 +1,24 @@
-// describe('R8UC1', () => {
-//   let videoName = 'https://www.youtube.com/watch?v=bjh7EYdFTo4';
-//   let taskName = '765RandomTaskName435345';
 
-//   beforeEach('loadfixture', () => {
-//     cy.loginWithFixture(); 
-//     cy.fistTaskFixture();
-//   });
-
-//   it("Empty field and disable button", () => {
-//     cy.get('form.submit-form').within(() => {
-//       cy.get('input#title[name="title"]').should('be.empty');
-//       cy.get('[type="submit"]').should('be.disabled');
-//       cy.get('input#title[name="title"]').type('Say hello to the world man haha.');
-//       cy.get('[type="submit"]').should('not.be.disabled');
-//       cy.get('input#title[name="title"]').clear();
-//       cy.get('[type="submit"]').should('be.disabled');
-//     });
-//   })
-
-//   it('Add todo task', () => {
-//     // # Check first if the task is already present
-//     // cy.contains(taskName).should('not.exist');
-//     cy.get('form.submit-form').within(() => {
-//       cy.get('input[name="title"]').should('be.empty');
-//       cy.get('input[name="title"]').type(taskName);
-//       cy.get('input[name="url"]').should('be.empty');
-//       cy.get('input[name="url"]').type(videoName);
-//       cy.get('[type="submit"]').click();
-//     })
-//     
-//   });
-// });  
 
 describe('R8UC1', () => {
   let videoName = 'https://www.youtube.com/watch?v=bjh7EYdFTo4';
-  let taskName = '765RandomTaskName435345';
+  let taskName = 'RandomTaskName';
+
+  before(function () {
+    cy.createUserFixture();
+    cy.createFirstTaskFixture();
+  })
+
 
   beforeEach('loadfixture', () => {
     cy.loginWithFixture(); 
-    cy.fistTaskFixture();
+    cy.checkFirstTaskFixture();
   });
 
   it("Empty field and disable button", () => {
     cy.get('form.inline-form').within(() => {
       cy.get('[type="text"]').clear();
+      cy.log("This test should generate an error because the button is not designed correctly now")
       cy.get('[type="submit"]').should('be.disabled');
     });
   })
@@ -66,17 +41,27 @@ describe('R8UC1', () => {
       cy.contains(taskName, { timeout: 2000 }).should('exist');
     });
   })
+
+  after(function () {
+    cy.deleteUserFixture();
+  })
 });
 
 describe('R8UC2', () => {
+  before(function () {
+    cy.createUserFixture();
+    cy.createFirstTaskFixture();
+    // cy.attachTodoFixture("Todo 2", true);
+  })
+
   beforeEach('loadfixture', () => {
     cy.loginWithFixture();
-    cy.fistTaskFixture();
+    cy.checkFirstTaskFixture();
   });
 
   it('Set todo task as active', () => {
-    cy.get('.todo-item').first().within(() => {
-      // # Check if the task is not checked if it is, then uncheck it
+    cy.contains('.todo-item', 'Todo 1', { matchCase: true }).within(() => {
+
       cy.get('.checker').then(($el) => {
         const classList = $el.attr('class');
         if (!classList.includes('unchecked')) { 
@@ -85,11 +70,11 @@ describe('R8UC2', () => {
         cy.wrap($el).should('have.attr', 'class').and('contain', 'unchecked');
         cy.get('.editable').should('not.have.css', 'text-decoration-line', 'line-through');
       })
-      })
+    })
   })
   
   it('Set todo task as done', () => {
-    cy.get('.todo-item').first().within(() => {
+    cy.contains('.todo-item', 'Todo 1', { matchCase: true }).within(() => {
       cy.get('.checker').then(($el) => {
         const classList = $el.attr('class');
         if (classList.includes('unchecked')) {
@@ -100,29 +85,35 @@ describe('R8UC2', () => {
       })
       })
   })
+
+  after(function () {
+    cy.deleteUserFixture();
+  })
 })
 
 describe('R8UC3', () => {
-
+  before(function () {
+    cy.createUserFixture();
+    cy.createFirstTaskFixture();
+    cy.attachTodoFixture("Todo 2", true);
+  })
   beforeEach('loadfixture', () => {
     cy.loginWithFixture(); 
-    cy.fistTaskFixture(); 
+    cy.checkFirstTaskFixture(); 
   });
 
   it('Remove todo task', () => {
-    let todoName = "Do this task";
+    let todoName = "Todo 2";
 
-    // # Add a new todo task
-    cy.get('form.inline-form').within(() => {
-      cy.get('input[type="text"]').type(todoName);
-      cy.get('input[type="submit"]').click();
-    })
-    // # Check if the task is added to the list
-    cy.contains('.todo-item', todoName).within(() => {
-      cy.get('.remover').click()
-    });
+    // # Remove the task
+    cy.contains('.todo-item', todoName, { matchCase: true }).within(() => {
+    cy.get('.remover').click()
+  });
     // # Check if the task is removed from the list
     cy.contains('.todo-item', todoName).should('not.exist');
+  })
+  after(function () {
+    cy.deleteUserFixture();
   })
 })
 

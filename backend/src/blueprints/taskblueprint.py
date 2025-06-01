@@ -17,6 +17,7 @@ task_blueprint = Blueprint('task_blueprint', __name__)
 @cross_origin()
 def create():
     try:
+        print(request.form.to_dict(flat=False))
         data = request.form.to_dict(flat=False)
         userid = data['userid'][0]
         # convert all non-array fields back to simple values
