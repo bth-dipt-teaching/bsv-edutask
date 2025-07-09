@@ -11,6 +11,7 @@ from src.controllers.usercontroller import UserController
 #This test verifies that if you use an invalid user email, it raises a ValueError.
 def test_email_format_invalid():
     dao = Mock()
+ 
     ctrl = UserController(dao)
 
     with pytest.raises(ValueError):
