@@ -41,6 +41,11 @@ jobs:
           pip install -r backend/requirements.pip
           pip install pytest
 
+      - name: Prepare validators directory
+        run: |
+          mkdir -p src/static/validators
+          cp backend/src/static/validators/* src/static/validators/
+
       - name: Run tests
         run: |
           pytest -v backend/test
