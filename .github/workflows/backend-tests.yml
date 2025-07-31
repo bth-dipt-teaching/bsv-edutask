@@ -3,10 +3,10 @@ name: Backend Unit Tests
 on:
   push:
     branches:
-      - "**"            # Körs på push till alla branches
+      - "**"
   pull_request:
     branches:
-      - master          # Körs för alla PR:er som går mot master
+      - master
 
 jobs:
   test:
@@ -18,14 +18,20 @@ jobs:
         ports:
           - 27017:27017
         options: >-
-          --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --quiet
+          --bind_ip_all
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Wait for MongoDB
+        run: |
+          for i in {1..30}; do
+            nc -z localhost 27017 && echo "MongoDB is up!" && break
+            echo "Waiting for MongoDB..."
+            sleep 2
+          done
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -40,4 +46,4 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest backend/test
+          pytest -v backend/test
