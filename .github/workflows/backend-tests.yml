@@ -3,10 +3,10 @@ name: Backend Unit Tests
 on:
   push:
     branches:
-      - "**"
+      - "**"        # Kör på alla pushar
   pull_request:
     branches:
-      - main
+      - main        # Kör på PR:ar mot main (enligt uppgiften)
 
 jobs:
   test:
@@ -16,32 +16,37 @@ jobs:
       mongo:
         image: mongo:6
         ports:
-          - 27017:27017
+          - 27017:27017  # MongoDB service som körs parallellt
 
     steps:
+      # Steg 1: Klona koden
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Steg 2: Vänta på att MongoDB startar
       - name: Wait for MongoDB
         run: |
-          sudo apt-get update && sudo apt-get install -y netcat
+          sudo apt-get update && sudo apt-get install -y netcat-openbsd
           for i in {1..30}; do
             nc -z localhost 27017 && echo "MongoDB is up!" && break
             echo "Waiting for MongoDB..."
             sleep 2
           done
 
+      # Steg 3: Sätt upp rätt Python-version
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
 
+      # Steg 4: Installera dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.pip
           pip install pytest
 
+      # Steg 5: Kör endast usercontroller-enhetstesterna (krav i uppgiften)
       - name: Run backend unit tests
         run: |
           pytest -v backend/test/demo/unit/test_usercontroller_lookup.py
