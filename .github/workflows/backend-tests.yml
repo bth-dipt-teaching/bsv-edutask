@@ -17,9 +17,6 @@ jobs:
         image: mongo:6
         ports:
           - 27017:27017
-        options: >-
-          --quiet
-          --bind_ip_all
 
     steps:
       - name: Checkout repository
