@@ -3,10 +3,10 @@ name: Backend Unit Tests
 on:
   push:
     branches:
-      - master
+      - "**"            # Körs på push till alla branches
   pull_request:
     branches:
-      - master
+      - master          # Körs för alla PR:er som går mot master
 
 jobs:
   test:
