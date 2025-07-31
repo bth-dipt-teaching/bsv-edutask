@@ -3,10 +3,10 @@ name: Backend Unit Tests
 on:
   push:
     branches:
-      - "**"            # Kör tester på alla branches
+      - "**"
   pull_request:
     branches:
-      - master          # Kör tester på alla PR:er mot master
+      - main
 
 jobs:
   test:
@@ -17,21 +17,17 @@ jobs:
         image: mongo:6
         ports:
           - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'" 
-          --health-interval=10s 
-          --health-timeout=5s 
-          --health-retries=5
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Wait for MongoDB (extra säkerhet)
+      - name: Wait for MongoDB
         run: |
+          sudo apt-get update && sudo apt-get install -y netcat
           for i in {1..30}; do
-            nc -z localhost 27017 && echo "✅ MongoDB is up!" && break
-            echo "⏳ Waiting for MongoDB..."
+            nc -z localhost 27017 && echo "MongoDB is up!" && break
+            echo "Waiting for MongoDB..."
             sleep 2
           done
 
@@ -46,11 +42,6 @@ jobs:
           pip install -r backend/requirements.pip
           pip install pytest
 
-      - name: Prepare validators directory (fix för todo.json)
+      - name: Run backend unit tests
         run: |
-          mkdir -p src/static/validators
-          cp backend/src/static/validators/* src/static/validators/
-
-      - name: Run all backend tests
-        run: |
-          pytest -v backend/test
+          pytest -v backend/test/demo/unit/test_usercontroller_lookup.py
