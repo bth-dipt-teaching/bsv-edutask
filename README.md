@@ -1,4 +1,4 @@
-# Edutask: a Training System for PA1417
+# Edutask: a Training System for PA1417 course
 
 [![GitHub](https://img.shields.io/github/license/JulianFrattini/edutask)](./LICENSE)
 
