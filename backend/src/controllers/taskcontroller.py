@@ -14,7 +14,7 @@ class TaskController(Controller):
     def create(self, data: dict):
         """Create a new task object based on the data contained in the dict. The data must contain at least a userid, a video url and a title. If todos are contained in the data, create todo objects and associate them to the task
 
-        attributes:
+        parameters:
             data -- dict containing the data of the new task (at least a title, url, and userid)
 
         returns:
@@ -70,7 +70,7 @@ class TaskController(Controller):
     def get_tasks_of_user(self, id: str):
         """Return all task objects that are associated to a specific user.
 
-        attributes:
+        parameters:
             id -- the unique identifier of a user object
 
         returns:
