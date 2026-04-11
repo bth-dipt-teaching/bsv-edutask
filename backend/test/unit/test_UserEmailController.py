@@ -57,6 +57,7 @@ def test_get_user_by_email_no_users(controller, mock_dao):
     "test@",
     "@example.com",
     "test@@example.com",
+    "test@.com"
     "",
 ])
 def test_invalid_emails_should_raise_value_error(controller, email):
