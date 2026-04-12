@@ -54,9 +54,9 @@ def test_get_user_by_email_no_users(controller, mock_dao):
 @pytest.mark.unit
 @pytest.mark.parametrize("email", [
     "invalidemail",
-    "test@",
-    "@example.com",
-    "test@@example.com",
+    "test@test",
+    "@test.com",
+    "test@@test.com",
     "test@.com"
     "",
 ])
