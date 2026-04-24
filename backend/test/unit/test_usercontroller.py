@@ -20,6 +20,7 @@ class TestGetUserByEmail:
     # https://codefool.tumblr.com/post/15288874550/list-of-valid-and-invalid-email-addresses
     @pytest.mark.unit
     @pytest.mark.parametrize("email", [
+        (''),
         ('plainaddress'),
         ('#@%^%#$@#$@#.com'),
         ('@example.com'),
@@ -112,7 +113,6 @@ class TestGetUserByEmail:
     @pytest.mark.parametrize("dao_users, expected", [
         (users[:1], users[0]),
         (users, users[0]),
-        # (users, users[1]),
         ([], None)
     ])
     def test_returns_object(self, dao_users, expected):
