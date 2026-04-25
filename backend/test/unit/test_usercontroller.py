@@ -21,6 +21,7 @@ class TestGetUserByEmail:
     @pytest.mark.unit
     @pytest.mark.parametrize("email", [
         (''),
+        ('@'),
         ('plainaddress'),
         ('#@%^%#$@#$@#.com'),
         ('@example.com'),
@@ -59,6 +60,7 @@ class TestGetUserByEmail:
 
     @pytest.mark.unit
     @pytest.mark.parametrize("email", [
+        ('e@example.com'),
         ('email@example.com'),
         ('firstname.lastname@example.com'),
         ('email@subdomain.example.com'),
