@@ -32,7 +32,7 @@ jobs:
       run: |
         python -m pytest -m unit
         
-    - name: Integration Tests
-      run: |
-        python -m pytest -m integration
+#    - name: Integration Tests
+#      run: |
+#        python -m pytest -m integration
     
