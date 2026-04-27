@@ -8,7 +8,7 @@ from src.controllers.usercontroller import UserController
 def sut(daoList):
     mockedDAO = mock.MagicMock()
 
-    mockedDAO.find.retun_value = daoList
+    mockedDAO.find.return_value = daoList
 
     mockedReturnValue = UserController(dao=mockedDAO)
     return mockedReturnValue
@@ -18,8 +18,8 @@ def sut(daoList):
 @pytest.mark.unit
 @pytest.mark.parametrize('daoList, expected',
     [
-        ([{"email": 'viktor@gmail.com'}], {"email": 'viktor@gamil.com'}),
-        ([{"email": 'viktor@gmail.com'}, {"email": 'viktor@gamil.com'}, {"email": 'viktor@gmail.com'}], {"email": 'viktor@gamil.com'}),
+        ([{"email": 'viktor@gmail.com'}], {"email": 'viktor@gmail.com'}),
+        ([{"email": 'viktor@gmail.com'}, {"email": 'viktor@gmail.com'}, {"email": 'viktor@gmail.com'}], {"email": 'viktor@gmail.com'}),
         ([], None)
     ]
 )
