@@ -17,6 +17,22 @@ describe('Logging into the system', () => {
           uid = response.body._id.$oid
           name = user.firstName + ' ' + user.lastName
           email = user.email
+
+          const data = new URLSearchParams()
+          data.append('title', 'watch math')
+          data.append('description', 'math is good')
+          data.append('userid', uid)
+          data.append('url', 'youtube.com/mat101')
+          data.append('todos', JSON.stringify('Watch video'))
+
+          return cy.request({
+            method: 'POST',
+            url: 'http://localhost:5000/tasks/create',
+            body: data.toString(),
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          })
         })
       })
   })
@@ -50,6 +66,7 @@ describe('Logging into the system', () => {
       .should('contain.text', 'Your tasks, ' + name)
   })
 
+  /** 
   after(function () {
     // clean up by deleting the user from the database
     cy.request({
@@ -59,4 +76,5 @@ describe('Logging into the system', () => {
       cy.log(response.body)
     })
   })
+    */
 })
