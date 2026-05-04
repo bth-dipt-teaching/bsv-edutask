@@ -13,7 +13,7 @@ def mock_dao():
     ('test@duplicate.com', [{'email' : 'test@duplicate.com'}, {'email' : 'test@duplicate.com'}], {'email' : 'test@duplicate.com'}),
     ('test@unknown.com', [], None)
 ])
-@pytest.mark.lab1
+@pytest.mark.unit
 def test_get_user_valid_email_format(email, mock_dao, dao_return, expected):
     """ Input has valid email format - unique email, duplicate email, no match. """
     # Arrange
@@ -28,7 +28,7 @@ def test_get_user_valid_email_format(email, mock_dao, dao_return, expected):
     'invalidemail',
     'a@b'
 ])
-@pytest.mark.lab1
+@pytest.mark.unit
 def test_get_user_invalid_email_format(mock_dao, email):
     """ Input has invalid email format - missing @, missing .com """
     # Arrange
@@ -37,7 +37,7 @@ def test_get_user_invalid_email_format(mock_dao, email):
     with pytest.raises(ValueError, match = 'Error: invalid email address'):
         user_controller.get_user_by_email(email)
 
-@pytest.mark.lab1
+@pytest.mark.unit
 def test_get_user_dao_failure(mock_dao):
     """ Database operation fail. """
     # Arrange
