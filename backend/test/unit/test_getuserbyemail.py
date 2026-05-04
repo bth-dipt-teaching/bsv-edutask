@@ -46,8 +46,4 @@ def test_get_user_dao_failure(mock_dao):
     user_controller = UserController(mock_dao)
     # Act
     with pytest.raises(Exception, match = 'Database failure'):
-<<<<<<< HEAD
         user_controller.get_user_by_email(email)
-=======
-        user_controller.get_user_by_email(email)
->>>>>>> 20cdd78a09a4fce705b2eed6e6cf90d9742a3536
