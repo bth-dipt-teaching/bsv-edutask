@@ -28,7 +28,9 @@ def dao_strict_validator():
         "$jsonSchema": {
             "bsonType": "object",
             "required": ["firstName", "lastName", "email"],
+            "additionalProperties": False,
             "properties": {
+                "_id": {"bsonType": "objectId"},
                 "firstName": {
                     "bsonType": "string",
                     "description": "the first name of a user must be determined",
