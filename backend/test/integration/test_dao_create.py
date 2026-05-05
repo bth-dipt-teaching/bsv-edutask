@@ -79,6 +79,9 @@ def test_correct_required_fields(dao_strict_validator):
     assert result is not None
     assert result["firstName"] == "Joe"
     assert "_id" in result
+    assert result["lastName"] == "Smith"
+    assert result["email"] == "email@email.com"
+    
 
 # @pytest.mark.integration
 # def test_full_valid(dao, task_dao):
