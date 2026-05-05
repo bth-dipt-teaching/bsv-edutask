@@ -6,19 +6,7 @@ from src.util.dao import DAO
 
 
 @pytest.fixture
-def dao_no_validator():
-    with patch("src.util.dao.getValidator") as mock_validator:
-        mock_validator.return_value = {}
-        dao = DAO("user")
-        dao.drop()
-        dao = DAO("user")
-
-        yield dao
-        dao.drop()
-
-
-@pytest.fixture
-def dao_strict_validator():
+def dao():
     strict_schema = {
         "$jsonSchema": {
             "bsonType": "object",
@@ -55,7 +43,7 @@ def dao_strict_validator():
 
 
 @pytest.mark.integration
-def test_no_required_fields(dao_strict_validator):
+def test_no_required_fields(dao):
     # arrange
     new_house = {
         "Address": "1428 Elm Street",
@@ -65,21 +53,21 @@ def test_no_required_fields(dao_strict_validator):
 
     # act & assert
     with pytest.raises(WriteError):
-        dao_strict_validator.create(new_house)
+        dao.create(new_house)
 
 
 @pytest.mark.integration
-def test_wrong_type(dao_strict_validator):
+def test_wrong_type(dao):
     # arrange
     new_user = {"firstName": True, "lastName": 123, "email": ["arr"]}
 
     # act & assert
     with pytest.raises(WriteError):
-        dao_strict_validator.create(new_user)
+        dao.create(new_user)
 
 
 @pytest.mark.integration
-def test_extra_fields(dao_strict_validator):
+def test_extra_fields(dao):
     # arrange
     new_user = {
         "firstName": "Joe",
@@ -90,17 +78,17 @@ def test_extra_fields(dao_strict_validator):
 
     # act & assert
     with pytest.raises(WriteError):
-        dao_strict_validator.create(new_user)
+        dao.create(new_user)
 
 
 @pytest.mark.integration
-def test_correct_required_fields(dao_strict_validator):
+def test_correct_required_fields(dao):
     required_fields_filled = {
         "firstName": "Joe",
         "lastName": "Smith",
         "email": "email@email.com",
     }
-    result = dao_strict_validator.create(required_fields_filled)
+    result = dao.create(required_fields_filled)
 
     assert result is not None
     assert "_id" in result
