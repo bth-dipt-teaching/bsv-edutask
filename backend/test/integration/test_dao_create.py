@@ -94,6 +94,14 @@ def test_correct_required_fields(dao_strict_validator):
     assert result["lastName"] == "Smith"
     assert result["email"] == "email@email.com"
     
+@pytest.mark.integration
+def test_extra_fields(dao_strict_validator):
+    # arrange
+    new_user = { "firstName": "Joe", "lastName": "Smith", "email": "email@email.com" ,"Address": "Street 123" }
+    
+    # act & assert
+    with pytest.raises(WriteError):
+        dao_strict_validator.create(new_user)
 
 # @pytest.mark.integration
 # def test_full_valid(dao, task_dao):
