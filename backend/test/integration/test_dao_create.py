@@ -113,7 +113,7 @@ def test_create_video_invalid_type(video_dao):
         video_dao.create(data)
 
 
-# ---------------- TODO TESTS ----------------
+# ---------------- TODO TESTS ---------------
 
 @pytest.mark.integration
 def test_create_todo_valid(todo_dao):
