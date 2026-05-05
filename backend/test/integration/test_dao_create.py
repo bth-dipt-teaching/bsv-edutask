@@ -18,31 +18,29 @@ def dao_no_validator():
         yield dao
         dao.drop()
 
+
 @pytest.fixture
 def dao_strict_validator():
     strict_schema = {
-        "bsonType": "object",
-        "required": ["firstName", "lastName", "email"],
-        "properties": {
-            "firstName": {
-                "bsonType": "string",
-                "description": "the first name of a user must be determined"
-            }, 
-            "lastName": {
-                "bsonType": "string",
-                "description": "the last name of a user must be determined"
+        "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["firstName", "lastName", "email"],
+            "properties": {
+                "firstName": {
+                    "bsonType": "string",
+                    "description": "the first name of a user must be determined",
+                },
+                "lastName": {
+                    "bsonType": "string",
+                    "description": "the last name of a user must be determined",
+                },
+                "email": {
+                    "bsonType": "string",
+                    "description": "the email address of a user must be determined",
+                    "uniqueItems": True,
+                },
+                "tasks": {"bsonType": "array", "items": {"bsonType": "objectId"}},
             },
-            "email": {
-                "bsonType": "string",
-                "description": "the email address of a user must be determined",
-                "uniqueItems": True
-            },
-            "tasks": {
-                "bsonType": "array",
-                "items": {
-                    "bsonType": "objectId"
-                }
-            }
         }
     }
 
@@ -52,15 +50,16 @@ def dao_strict_validator():
         yield dao
         dao.drop()
 
+
 @pytest.mark.integration
 def test_no_required_fields(dao_strict_validator):
     # arrange
     new_house = {
         "Address": "1428 Elm Street",
         "City": "Ohio",
-        "Owner": "Nancy Thompson"
+        "Owner": "Nancy Thompson",
     }
-    
+
     # act & assert
     with pytest.raises(WriteError):
         dao_strict_validator.create(new_house)
@@ -68,12 +67,11 @@ def test_no_required_fields(dao_strict_validator):
 @pytest.mark.integration
 def test_correct_required_fields(dao_strict_validator):
     
-    required_fields_filled = { "firstName": "joe", "lastName": "smith", "email": "email@email.com" , }
+    required_fields_filled = { "firstName": "Joe", "lastName": "smith", "email": "email@email.com" , }
     result = dao_strict_validator.create(required_fields_filled)
     
     assert result is not None
-    assert result["name"] == "Joe"
-    assert result["active"] is True
+    assert result["firstName"] == "Joe"
     assert "_id" in result
 
 # @pytest.mark.integration
