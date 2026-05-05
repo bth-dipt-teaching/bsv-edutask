@@ -15,6 +15,9 @@ def dao_no_validator():
     with patch("src.util.dao.getValidator") as mock_validator:
         mock_validator.return_value = {}
         dao = DAO("user")
+        dao.drop()
+        dao = DAO("user")
+        
         yield dao
         dao.drop()
 
@@ -47,6 +50,9 @@ def dao_strict_validator():
     with patch("src.util.dao.getValidator") as mock_validator:
         mock_validator.return_value = strict_schema
         dao = DAO("user")
+        dao.drop()
+        dao = DAO("user")
+        
         yield dao
         dao.drop()
 
