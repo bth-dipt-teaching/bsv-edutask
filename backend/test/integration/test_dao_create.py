@@ -12,7 +12,7 @@ def extract_id(doc: any) -> ObjectId:
 
 @pytest.fixture
 def dao_no_validator():
-    with patch("src.util.validators.getValidator") as mock_validator:
+    with patch("src.util.dao.getValidator") as mock_validator:
         mock_validator.return_value = {}
         dao = DAO("user")
         yield dao
@@ -46,7 +46,7 @@ def dao_strict_validator():
         }
     }
 
-    with patch("src.util.validators.getValidator") as mock_validator:
+    with patch("src.util.dao.getValidator") as mock_validator:
         mock_validator.return_value = strict_schema
         dao = DAO("user")
         yield dao
