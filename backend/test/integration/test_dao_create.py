@@ -71,14 +71,26 @@ def test_no_required_fields(dao_strict_validator):
         dao_strict_validator.create(new_house)
 
 @pytest.mark.integration
-def test_correct_required_fields(dao_strict_validator):
+def test_wrong_type(dao_strict_validator):
+    # arrange
+    new_user = {
+        "firstName": True,
+        "lastName": 123,
+        "email": ["arr"]
+    }
     
-    required_fields_filled = { "firstName": "Joe", "lastName": "smith", "email": "email@email.com" , }
+    # act & assert
+    with pytest.raises(WriteError):
+        dao_strict_validator.create(new_user)
+
+@pytest.mark.integration
+def test_correct_required_fields(dao_strict_validator):
+    required_fields_filled = { "firstName": "Joe", "lastName": "Smith", "email": "email@email.com" , }
     result = dao_strict_validator.create(required_fields_filled)
     
     assert result is not None
-    assert result["firstName"] == "Joe"
     assert "_id" in result
+    assert result["firstName"] == "Joe"
     assert result["lastName"] == "Smith"
     assert result["email"] == "email@email.com"
     
