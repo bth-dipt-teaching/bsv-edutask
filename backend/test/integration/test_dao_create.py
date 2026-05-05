@@ -1,13 +1,8 @@
 import pytest
-from bson import ObjectId
 from pymongo.errors import WriteError
 from unittest.mock import patch
 
 from src.util.dao import DAO
-
-
-def extract_id(doc: any) -> ObjectId:
-    return ObjectId(doc["_id"]["$oid"])
 
 
 @pytest.fixture
@@ -17,7 +12,7 @@ def dao_no_validator():
         dao = DAO("user")
         dao.drop()
         dao = DAO("user")
-        
+
         yield dao
         dao.drop()
 
@@ -54,7 +49,7 @@ def dao_strict_validator():
         dao = DAO("user")
         dao.drop()
         dao = DAO("user")
-        
+
         yield dao
         dao.drop()
 
@@ -72,162 +67,43 @@ def test_no_required_fields(dao_strict_validator):
     with pytest.raises(WriteError):
         dao_strict_validator.create(new_house)
 
+
 @pytest.mark.integration
 def test_wrong_type(dao_strict_validator):
     # arrange
-    new_user = {
-        "firstName": True,
-        "lastName": 123,
-        "email": ["arr"]
-    }
-    
+    new_user = {"firstName": True, "lastName": 123, "email": ["arr"]}
+
     # act & assert
     with pytest.raises(WriteError):
         dao_strict_validator.create(new_user)
 
+
+@pytest.mark.integration
+def test_extra_fields(dao_strict_validator):
+    # arrange
+    new_user = {
+        "firstName": "Joe",
+        "lastName": "Smith",
+        "email": "email@email.com",
+        "Address": "Street 123",
+    }
+
+    # act & assert
+    with pytest.raises(WriteError):
+        dao_strict_validator.create(new_user)
+
+
 @pytest.mark.integration
 def test_correct_required_fields(dao_strict_validator):
-    required_fields_filled = { "firstName": "Joe", "lastName": "Smith", "email": "email@email.com" , }
+    required_fields_filled = {
+        "firstName": "Joe",
+        "lastName": "Smith",
+        "email": "email@email.com",
+    }
     result = dao_strict_validator.create(required_fields_filled)
-    
+
     assert result is not None
     assert "_id" in result
     assert result["firstName"] == "Joe"
     assert result["lastName"] == "Smith"
     assert result["email"] == "email@email.com"
-    
-@pytest.mark.integration
-def test_extra_fields(dao_strict_validator):
-    # arrange
-    new_user = { "firstName": "Joe", "lastName": "Smith", "email": "email@email.com" ,"Address": "Street 123" }
-    
-    # act & assert
-    with pytest.raises(WriteError):
-        dao_strict_validator.create(new_user)
-
-# @pytest.mark.integration
-# def test_full_valid(dao, task_dao):
-#     # arrange
-#     task_id1 = extract_id(
-#         task_dao.create({"title": "test1", "description": "test task 1"})
-#     )
-
-#     task_id2 = extract_id(
-#         task_dao.create({"title": "test2", "description": "test task 2"})
-#     )
-
-#     new_user = {
-#         "firstName": "Mattias",
-#         "lastName": "Larsson",
-#         "email": "mattias.larsson@example.com",
-#         "tasks": [task_id1, task_id2],
-#     }
-
-#     # act
-#     inserted_user = dao.create(new_user)
-
-#     # assert
-#     assert inserted_user != None
-#     assert inserted_user["firstName"] == new_user["firstName"]
-#     assert inserted_user["lastName"] == new_user["lastName"]
-#     assert inserted_user["email"] == new_user["email"]
-#     assert [ObjectId(t["$oid"]) for t in inserted_user["tasks"]] == [task_id1, task_id2]
-
-
-# @pytest.mark.integration
-# def test_minimal_valid_doc(dao):
-#     # arrange
-#     new_user = {
-#         "firstName": "Mattias",
-#         "lastName": "Larsson",
-#         "email": "mattias.larsson@example.com",
-#     }
-
-#     # act
-#     inserted_user = dao.create(new_user)
-
-#     # assert
-#     assert inserted_user != None
-#     assert inserted_user["firstName"] == new_user["firstName"]
-#     assert inserted_user["lastName"] == new_user["lastName"]
-#     assert inserted_user["email"] == new_user["email"]
-
-
-# @pytest.mark.integration
-# def test_missing_fields_doc(dao):
-#     # arrange
-#     new_user = {
-#         "firstName": "Mattias",
-#         "lastName": "Larsson",
-#     }
-
-#     # act & assert
-#     with pytest.raises(WriteError):
-#         dao.create(new_user)
-
-
-# @pytest.mark.integration
-# def test_wrong_type(dao):
-#     # arrange
-#     new_user = {"firstName": True, "lastName": 10.0, "email": ["testing@example.com"]}
-
-#     # act & assert
-#     with pytest.raises(WriteError):
-#         dao.create(new_user)
-
-
-# @pytest.mark.integration
-# def test_extra_field(dao):
-#     # arrange
-#     new_user = {
-#         "firstName": "Mattias",
-#         "lastName": "Larsson",
-#         "email": "mattias.larsson@example.com",
-#         "hacked": True,
-#     }
-
-#     # act & assert
-#     with pytest.raises(WriteError):
-#         dao.create(new_user)
-
-
-# @pytest.mark.integration
-# def test_unique_field(dao):
-#     # arrange
-#     new_user = {
-#         "firstName": "Mattias",
-#         "lastName": "Larsson",
-#         "email": "mattias.larsson@example.com",
-#     }
-
-#     # act
-#     dao.create(new_user)
-
-#     # assert
-#     with pytest.raises(WriteError):
-#         dao.create(new_user)
-
-
-# @pytest.mark.integration
-# def test_empty_dict(dao):
-#     # arrange
-#     new_user = {}
-
-#     # act & assert
-#     with pytest.raises(WriteError):
-#         dao.create(new_user)
-
-
-# @pytest.mark.integration
-# def test_invalid_bson(dao):
-#     # arrange
-#     new_user = {
-#         "firstName": "Mattias",
-#         "lastName": "Larsson",
-#         "email": "test@example.com",
-#         "tasks": ["not-a-valid-objectid"],
-#     }
-
-#     # act & assert
-#     with pytest.raises(WriteError):
-#         dao.create(new_user)
