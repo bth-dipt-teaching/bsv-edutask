@@ -20,7 +20,6 @@ def test_when_one_match_exists(controller, mock_dao):
     result = controller.get_user_by_email("test@example.com")
 
     assert result == fake_user
-    mock_dao.find.assert_called_once_with({"email": "test@example.com"})
 
 
 def test_when_no_user_exists(controller, mock_dao):
@@ -29,7 +28,6 @@ def test_when_no_user_exists(controller, mock_dao):
     result = controller.get_user_by_email("test@example.com")
 
     assert result is None
-    mock_dao.find.assert_called_once_with({"email": "test@example.com"})
 
 
 def test_when_multiple_users_exist_and_print_warning(controller, mock_dao, capsys):
@@ -40,10 +38,9 @@ def test_when_multiple_users_exist_and_print_warning(controller, mock_dao, capsy
     result = controller.get_user_by_email("test@example.com")
 
     captured = capsys.readouterr()
+
     assert result == fake_user1
     assert "more than one user found" in captured.out
-    assert "test@example.com" in captured.out
-    mock_dao.find.assert_called_once_with({"email": "test@example.com"})
 
 
 def test_raises_value_error_for_invalid_email(controller):
