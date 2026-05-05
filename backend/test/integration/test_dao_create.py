@@ -22,10 +22,27 @@ def dao_no_validator():
 def dao_strict_validator():
     strict_schema = {
         "bsonType": "object",
-        "required": ["name", "active"],
+        "required": ["firstName", "lastName", "email"],
         "properties": {
-            "name": {"bsonType": "string"},
-            "active": {"bsonType": "bool"}
+            "firstName": {
+                "bsonType": "string",
+                "description": "the first name of a user must be determined"
+            }, 
+            "lastName": {
+                "bsonType": "string",
+                "description": "the last name of a user must be determined"
+            },
+            "email": {
+                "bsonType": "string",
+                "description": "the email address of a user must be determined",
+                "uniqueItems": True
+            },
+            "tasks": {
+                "bsonType": "array",
+                "items": {
+                    "bsonType": "objectId"
+                }
+            }
         }
     }
 
