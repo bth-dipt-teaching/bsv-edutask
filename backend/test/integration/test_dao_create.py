@@ -1,4 +1,4 @@
-import pytest # type: ignore
+import pytest  # type: ignore
 from src.util.daos import getDao
 
 
@@ -8,21 +8,24 @@ from src.util.daos import getDao
 def task_dao():
     dao = getDao("task")
     dao.drop()
-    return dao
+    yield dao
+    dao.drop()
 
 
 @pytest.fixture
 def video_dao():
     dao = getDao("video")
     dao.drop()
-    return dao
+    yield dao
+    dao.drop()
 
 
 @pytest.fixture
 def todo_dao():
     dao = getDao("todo")
     dao.drop()
-    return dao
+    yield dao
+    dao.drop()
 
 
 # ---------------- TASK TESTS ----------------
