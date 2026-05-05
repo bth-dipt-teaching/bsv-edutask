@@ -4,33 +4,45 @@ from src.util.daos import getDao
 from src.controllers.usercontroller import UserController as usercontroller
 
 class TestEmailLogin:
-    @pytest.mark.usercontroller
-    def test_email(self):
+    @pytest.fixture
+    def database_mock():
         dao_mock = MagicMock()
-        user_c = usercontroller(dao_mock)
+        return dao_mock
+    
+    @pytest.fixture
+    def user_controller_mock(database_mock):
+        user_c = usercontroller(database_mock)
+        return user_c
+    
+    @pytest.fixture
+    def get_user_mock(email, user_controller_mock):
+        user = user_controller_mock()
+        user.get_user_by_email(email)
+        return user
+    
 
+    @pytest.mark.usercontroller
+    def test_email(self, get_user_mock, user_controller_mock ):
+        user_c = user_controller_mock()
+        
         test_user = [
             {"name": "user_one", "email": "test@email.com"},
         ]
 
         user_c.dao.find.return_value = test_user
         email = "test@email.com"
-        result = user_c.get_user_by_email(email)
 
-        assert result is test_user[0]
+        assert get_user_mock(email) is test_user[0]
 
-    def test_invalid_email(self):
-        dao_mock = MagicMock()
-        user_c = usercontroller(dao_mock)
+    def test_invalid_email(self, get_user_mock):
         email = "invalid.com"
      
         with pytest.raises(ValueError, match=f"invalid email address"):
-            user_c.get_user_by_email(email)
+            get_user_mock(email)
 
     @pytest.mark.usercontroller
     def test_no_user(self):
-        dao_mock = MagicMock()
-        user_c = usercontroller(dao_mock)
+        user_c = user_controller_mock()
 
         test_user = []
         email = "test@email.com"
@@ -40,8 +52,7 @@ class TestEmailLogin:
 
     @pytest.mark.usercontroller
     def test_multiple_users(self, capsys):
-        dao_mock = MagicMock()
-        user_c = usercontroller(dao_mock)
+        user_c = user_controller_mock()
 
         test_users = [
             {"name": "user_one", "email": "test@email.com"},
