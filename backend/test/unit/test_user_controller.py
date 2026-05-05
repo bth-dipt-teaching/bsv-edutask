@@ -2,26 +2,29 @@ import pytest
 from unittest.mock import MagicMock, patch
 from src.controllers.usercontroller import UserController
 
+@pytest.fixture
+def dao_mock():
+    return MagicMock()
+
+@pytest.fixture
+def user_controller(dao_mock):
+    return UserController(dao_mock)
+
 @pytest.mark.unit
-def test_get_user_by_email_invalid():
+def test_get_user_by_email_invalid(user_controller, dao_mock):
     #Arrange
-    dao_mock = MagicMock()
     dao_mock.find.return_value = None
-    #Act  
-    usercontrol = UserController(dao_mock)
-    #Assert 
+    #Act & Assert 
     with pytest.raises(ValueError):
-        usercontrol.get_user_by_email("Email")
+        user_controller.get_user_by_email("Email")
         
 
 @pytest.mark.unit
-def test_get_user_by_email_valid_email_no_user():
+def test_get_user_by_email_valid_email_no_user(user_controller, dao_mock):
     # arrange
-    dao_mock = MagicMock()
     dao_mock.find.return_value = [None]
     
     # act
-    user_controller = UserController(dao_mock)
     result = user_controller.get_user_by_email("email@example.com")
 
     # assert
@@ -29,27 +32,20 @@ def test_get_user_by_email_valid_email_no_user():
     
     
 @pytest.mark.unit
-def test_get_user_by_email_expection():
+def test_get_user_by_email_exception(user_controller, dao_mock):
     #Arrange
-    dao_mock = MagicMock()
     dao_mock.find.side_effect=Exception("DB Failure")
     
-    #Act  
-    usercontrol = UserController(dao_mock)
-    
-    #Assert 
+    #Act & Assert 
     with pytest.raises(Exception):
-        usercontrol.get_user_by_email("email@example.com")
+        user_controller.get_user_by_email("email@example.com")
 
 @pytest.mark.unit
-def test_get_user_by_email_valid():
+def test_get_user_by_email_valid(user_controller, dao_mock):
     # arrange
     test_user = {"name": "FooBar"}
     
-    dao_mock = MagicMock()
     dao_mock.find.return_value = [test_user]
-
-    user_controller = UserController(dao_mock)
 
     # act
     result = user_controller.get_user_by_email("email@example.com")
@@ -58,15 +54,12 @@ def test_get_user_by_email_valid():
     assert result == test_user
     
 @pytest.mark.unit
-def test_get_user_by_email_valid_multi():
+def test_get_user_by_email_valid_multi(user_controller, dao_mock):
     # arrange
     test_user1 = {"name": "FooBar"}
     test_user2 = {"name": "BarFoo"}
     
-    dao_mock = MagicMock()
     dao_mock.find.return_value = [test_user1, test_user2]
-
-    user_controller = UserController(dao_mock)
 
     # act
     with patch("src.controllers.usercontroller.print") as mock_print:
