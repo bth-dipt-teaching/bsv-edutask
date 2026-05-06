@@ -15,24 +15,23 @@ class TestEmailLogin:
         return user_c
     
     @pytest.fixture
-    def get_user_mock(email, user_controller_mock):
-        user = user_controller_mock()
-        user.get_user_by_email(email)
-        return user
+    def valid_email():
+        return "test@email.com"
     
 
     @pytest.mark.usercontroller
-    def test_email(self, get_user_mock, user_controller_mock ):
-        user_c = user_controller_mock()
+    def test_email(self, user_controller_mock, valid_email):
         
         test_user = [
             {"name": "user_one", "email": "test@email.com"},
         ]
+   
+        user_controller_mock.dao.find.return_value = test_user
 
-        user_c.dao.find.return_value = test_user
-        email = "test@email.com"
-
-        assert get_user_mock(email) is test_user[0]
+        result = user_controller_mock.get_user_by_email(valid_email)
+        
+        assert result == test_user[0]
+        assert result["email"] == test_user[0]["email"]
 
     def test_invalid_email(self, get_user_mock):
         email = "invalid.com"
@@ -41,46 +40,37 @@ class TestEmailLogin:
             get_user_mock(email)
 
     @pytest.mark.usercontroller
-    def test_no_user(self):
-        user_c = user_controller_mock()
-
+    def test_no_user(self, user_controller_mock ,valid_email):
         test_user = []
-        email = "test@email.com"
-        user_c.dao.find.return_value = test_user
-        result = user_c.get_user_by_email(email)
+        user_controller_mock.dao.find.return_value = test_user
+        result = user_controller_mock.get_user_by_email(valid_email)
         assert result is None
 
     @pytest.mark.usercontroller
-    def test_multiple_users(self, capsys):
-        user_c = user_controller_mock()
+    def test_multiple_users(self, capsys, user_controller_mock, valid_email):
 
         test_users = [
             {"name": "user_one", "email": "test@email.com"},
             {"name": "user_two", "email": "test@email.com"},
         ]
 
-        user_c.dao.find.return_value = test_users
-        result = user_c.get_user_by_email("test@email.com")
+        user_controller_mock.dao.find.return_value = test_users
+        result = user_controller_mock.get_user_by_email(valid_email)
         captured = capsys.readouterr()
 
         assert result == test_users[0]
         assert "more than one user found" in captured.out.lower() 
 
     @pytest.mark.usercontroller
-    def test_database_failure(self):
+    def test_database_failure(self, valid_email):
         dao_mock = MagicMock()
         dao_mock.find.side_effect = Exception("Db down")
         user_c = usercontroller(dao_mock)
-        email = "test@email.com"
      
         with pytest.raises(Exception):
-            user_c.get_user_by_email(email)
+            user_c.get_user_by_email(valid_email)
         
     @pytest.mark.usercontroller
-    def test_empty_input(self):
-        dao_mock = MagicMock()
-        user_c = usercontroller(dao_mock)
-        email = ""
-     
+    def test_empty_input(self, user_controller_mock):
         with pytest.raises(ValueError, match=f"invalid email address"):
-            user_c.get_user_by_email(email)
+            user_controller_mock.get_user_by_email("")
