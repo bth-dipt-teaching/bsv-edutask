@@ -11,66 +11,74 @@ describe('R8 - Manipulate todo list of a task', () => {
 
     const unique = Date.now()
 
-    user = {
-      email: `sabr-r8-test-${unique}@gmail.com`,
-      firstName: 'Sabr',
-      lastName: 'Tester'
-    }
-
-    taskTitle = `R8 Test Task ${unique}`
-    initialTodo = 'Initial todo item'
-
-    cy.request({
-      method: 'POST',
-      url: `${backendUrl}/users/create`,
-      form: true,
-      body: user
-    }).then((response) => {
-      uid = response.body._id.$oid
-
-      return cy.request({
-        method: 'POST',
-        url: `${backendUrl}/tasks/create`,
-        form: true,
-        body: {
-          title: taskTitle,
-          description: 'Task created for Cypress R8 tests',
-          userid: uid,
-          url: 'dQw4w9WgXcQ',
-          todos: initialTodo
+    cy.fixture('user.json')
+      .then((dummyUser) => {
+        user = {
+          ...dummyUser,
+          email: `sabr-r8-test-${unique}@gmail.com`
         }
+
+        return cy.request({
+          method: 'POST',
+          url: `${backendUrl}/users/create`,
+          form: true,
+          body: user
+        })
       })
-    })
+      .then((response) => {
+        uid = response.body._id.$oid
 
-    // Visit frontend and log in through the GUI
-    cy.visit('/')
+        return cy.fixture('task.json')
+      })
+      .then((dummyTask) => {
+        taskTitle = `${dummyTask.title} ${unique}`
+        initialTodo = dummyTask.todos
 
-    cy.contains('div', 'Email Address')
-      .find('input[type=text]')
-      .type(user.email)
+        return cy.request({
+          method: 'POST',
+          url: `${backendUrl}/tasks/create`,
+          form: true,
+          body: {
+            ...dummyTask,
+            title: taskTitle,
+            userid: uid
+          }
+        })
+      })
+      .then(() => {
+        // visit frontend and log in through the GUI
+        cy.visit('/')
 
-    cy.get('form')
-      .submit()
+        cy.contains('div', 'Email Address')
+          .find('input[type=text]')
+          .type(user.email)
 
-    cy.get('h1')
-      .should('contain.text', `Your tasks, ${user.firstName} ${user.lastName}`)
+        cy.get('form')
+          .submit()
 
-    // Open the created task in detail view / popup
-    cy.contains('.title-overlay', taskTitle)
-      .click({ force: true })
+        cy.get('h1')
+          .should('contain.text', `Your tasks, ${user.firstName} ${user.lastName}`)
 
-    cy.get('.popup')
-      .should('be.visible')
+        // open the created task in detail view / popup
+        cy.get('.container .container-element')
+          .first()
+          .should('contain.text', taskTitle)
+          .find('a')
+          .click()
 
-    cy.get('.todo-list')
-      .should('be.visible')
+        cy.get('.popup')
+          .should('be.visible')
 
-    cy.contains('.todo-item', initialTodo)
-      .should('be.visible')
+        cy.get('.todo-list')
+          .should('be.visible')
+
+        cy.contains('.todo-item', initialTodo)
+          .should('be.visible')
+      })
   })
 
   afterEach(() => {
-    // Clean up: deleting the user also deletes the user's tasks and todos
+    // clean up, deleting the user also deletes the user's tasks and todos
     if (uid) {
       cy.request({
         method: 'DELETE',
@@ -153,9 +161,15 @@ describe('R8 - Manipulate todo list of a task', () => {
   })
 
   it('R8UC3 - deletes an existing todo item from the todo list', () => {
+    cy.intercept('DELETE', `${backendUrl}/todos/byid/*`).as('deleteTodo')
+
     cy.contains('.todo-item', initialTodo)
       .find('.remover')
       .click()
+
+    cy.wait('@deleteTodo')
+      .its('response.statusCode')
+      .should('eq', 200)
 
     cy.contains('.todo-item', initialTodo)
       .should('not.exist')
