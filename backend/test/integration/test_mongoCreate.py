@@ -151,20 +151,6 @@ def test_tasks_wrong_item_type(test_dao):
     with pytest.raises(WriteError):
         test_dao.create(data)
 
-
-@pytest.mark.integration
-def test_duplicate_email_allowed(test_dao):
-    """
-    mongoDB validator does NOT enforcm
-    """
-    data = {"firstName": "John", "lastName": "Doe", "email": "same@example.com"}
-
-    test_dao.create(data)
-    result = test_dao.create(data)
-
-    assert result["email"] == "same@example.com"
-
-
 @pytest.mark.integration
 def test_duplicate_email_should_fail(test_dao):
     data = {"firstName": "John", "lastName": "Doe", "email": "dup@example.com"}
