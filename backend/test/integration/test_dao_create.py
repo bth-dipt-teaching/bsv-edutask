@@ -1,4 +1,4 @@
-import os
+from unittest.mock import patch
 
 import pytest
 from bson.objectid import ObjectId
@@ -7,14 +7,107 @@ from pymongo.errors import WriteError
 from src.util.dao import DAO
 
 
-TEST_DATABASE = "edutask_test"
-
-
-@pytest.fixture(autouse=True)
-def use_test_database():
-    os.environ["MONGO_DB"] = TEST_DATABASE
-    yield
-    os.environ.pop("MONGO_DB", None)
+VALIDATORS = {
+    "task": {
+        "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["title", "description"],
+            "properties": {
+                "title": {
+                    "bsonType": "string",
+                    "description": "the title of a task must be determined",
+                    "uniqueItems": True
+                },
+                "description": {
+                    "bsonType": "string",
+                    "description": "the description of a task must be determined"
+                },
+                "startdate": {
+                    "bsonType": "date"
+                },
+                "duedate": {
+                    "bsonType": "date"
+                },
+                "requires": {
+                    "bsonType": "array",
+                    "items": {
+                        "bsonType": "objectId"
+                    }
+                },
+                "categories": {
+                    "bsonType": "array",
+                    "items": {
+                        "bsonType": "string"
+                    }
+                },
+                "todos": {
+                    "bsonType": "array",
+                    "items": {
+                        "bsonType": "objectId"
+                    }
+                },
+                "video": {
+                    "bsonType": "objectId"
+                }
+            }
+        }
+    },
+    "todo": {
+        "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["description"],
+            "properties": {
+                "description": {
+                    "bsonType": "string",
+                    "description": "the description of a todo must be determined",
+                    "uniqueItems": True
+                },
+                "done": {
+                    "bsonType": "bool"
+                }
+            }
+        }
+    },
+    "user": {
+        "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["firstName", "lastName", "email"],
+            "properties": {
+                "firstName": {
+                    "bsonType": "string",
+                    "description": "the first name of a user must be determined"
+                },
+                "lastName": {
+                    "bsonType": "string",
+                    "description": "the last name of a user must be determined"
+                },
+                "email": {
+                    "bsonType": "string",
+                    "description": "the email address of a user must be determined",
+                    "uniqueItems": True
+                },
+                "tasks": {
+                    "bsonType": "array",
+                    "items": {
+                        "bsonType": "objectId"
+                    }
+                }
+            }
+        }
+    },
+    "video": {
+        "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["url"],
+            "properties": {
+                "url": {
+                    "bsonType": "string",
+                    "description": "the url of a YouTube video must be determined"
+                }
+            }
+        }
+    }
+}
 
 
 @pytest.fixture
@@ -22,19 +115,19 @@ def dao_factory():
     created_daos = []
 
     def _create_dao(collection_name):
-        dao = DAO(collection_name)
-        dao.drop()
+        with patch("src.util.dao.getValidator", return_value=VALIDATORS[collection_name]):
+            dao = DAO(collection_name)
+            dao.drop()
 
-        dao = DAO(collection_name)
-        created_daos.append(dao)
+            dao = DAO(collection_name)
+            created_daos.append(dao)
 
-        return dao
+            return dao
 
     yield _create_dao
 
     for dao in created_daos:
         dao.drop()
-
 
 # --------------------
 # task.json tests
