@@ -61,6 +61,15 @@ describe('Test UI-R8UC', () => {
     cy.get('.inline-form input[type="submit"]').should('be.disabled')
   })
 
+  it('if an item can be removed', () => {
+    cy.get('.todo-item').should('have.length.at.least', 1)
+
+    cy.get('.todo-item').last().within(() => {
+      cy.get('.remover').click()
+      cy.get('.todo-item').should('not.exist')
+    })
+  })
+
   it('check if active todo-item is done correctly', () => {
     cy.get('.todo-item').should('have.length.at.least', 1)
 
@@ -83,15 +92,6 @@ describe('Test UI-R8UC', () => {
       cy.get('.checker').click()
 
       cy.get('.checker').should('have.class', 'unchecked')
-    })
-  })
-
-  it('if an item can be removed', () => {
-    cy.get('.todo-item').should('have.length.at.least', 1)
-
-    cy.get('.todo-item').last().within(() => {
-      cy.get('.remover').click()
-      cy.get('.todo-item').should('not.exist')
     })
   })
 })
