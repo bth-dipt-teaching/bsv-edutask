@@ -66,7 +66,7 @@ describe('Logging into the system', () => {
       .should('contain.text', 'Your tasks, ' + name)
   })
 
-  /** 
+
   after(function () {
     // clean up by deleting the user from the database
     cy.request({
@@ -76,5 +76,4 @@ describe('Logging into the system', () => {
       cy.log(response.body)
     })
   })
-    */
 })
