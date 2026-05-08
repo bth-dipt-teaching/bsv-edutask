@@ -13,7 +13,10 @@ def hasAttribute(obj: dict, attribute: str):
         True -- if the dict contains the attribute as a key
         False -- if the dict does not contain the attribute as a key or is None    
     """
-    return (attribute in obj)
+    if obj is None:
+        return False
+
+    return attribute in obj
 
 class ValidationHelper:
     def __init__(self, usercontroller: UserController):
