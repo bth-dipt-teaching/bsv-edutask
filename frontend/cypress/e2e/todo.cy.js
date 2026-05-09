@@ -10,7 +10,7 @@ describe('Manipulating todos of the system', () => {
       .then((user) => {
         cy.request({
           method: 'POST',
-          url: 'http://localhost:5000/users/create',
+          url: 'http://localhost:5001/users/create',
           form: true,
           body: user
         }).then((response) => {
@@ -22,7 +22,7 @@ describe('Manipulating todos of the system', () => {
           cy.fixture('task.json').then((task) => {
             cy.request({
               method: 'POST',
-              url: 'http://localhost:5000/tasks/create',
+              url: 'http://localhost:5001/tasks/create',
               form: true,
               body: { ...task, userid: uid }
             })
@@ -32,21 +32,60 @@ describe('Manipulating todos of the system', () => {
   })
 
   beforeEach(function () {
-    // enter the main main page
-    cy.visit('http://localhost:3000')
-    // click detailed view
-    cy.get('.container-element a').first().click()
+      // enter the main main page
+      cy.visit('http://localhost:3001')
+
+      cy.contains('div', 'Email Address')
+        .find('input[type=text]')
+        .type(email)
+
+      cy.get('form')
+        .submit()
+
+      // click detailed view
+      cy.get('.container-element a')
+        .first()
+        .click()
   })
 
-  it('Add a todo to the task', () => {
+  it('R8UC1: Add a todo to the task', () => {
     // detect the input field for the todo description and type in a description
     cy.get('input[placeholder="Add a new todo item"]')
       .type('New todo')
-
-    // add todo
-    cy.get('form')
+      .closest('form')
       .submit()
+
+    // assert that the new todo is in the list of todos
+    cy.get('ul.todo-list')
+      .find('li.todo-item')
+      .last()
+      .should('contain.text', 'New todo')
   })
+
+  // assert that the "Add" button is disabled when the input field is empty
+  it('R8UC1: Add todo disabled', () => {
+    cy.get('input[type="submit"][value="Add"]')
+      .should('be.disabled')
+  })
+
+  it('R8UC2: Toggle todo status', () => {
+    cy.get('ul.todo-list')
+      .find('li.todo-item')
+      .first()
+      .find('span.checker')
+      .click()
+      .should('have.class', 'checked')
+  })
+
+  it('R8UC2: Untoggle todo status', () => {
+    cy.get('ul.todo-list')
+      .find('li.todo-item')
+      .first()
+      .find('span.checker')
+      .click()
+      .should('have.class', 'unchecked')
+  })
+
   /*
   it('login to the system with an existing account', () => {
     // detect a div which contains "Email Address", find the input and type (in a declarative way)
@@ -70,7 +109,7 @@ describe('Manipulating todos of the system', () => {
     // clean up by deleting the user from the database
     cy.request({
       method: 'DELETE',
-      url: `http://localhost:5000/users/${uid}`
+      url: `http://localhost:5001/users/${uid}`
     }).then((response) => {
       cy.log(response.body)
     })
