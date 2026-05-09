@@ -1,27 +1,26 @@
 import pytest
-from pymongo import MongoClient
 from pymongo.errors import WriteError
 from bson import ObjectId
+from pathlib import Path
+import json
 from unittest.mock import patch
 
 from src.util.dao import DAO
 
 
 @pytest.fixture
-def test_dao():
-    client = MongoClient("mongodb://localhost:27017")
+def validator():
+    path = Path("src/static/validators/user.json")
+    with open(path, "r") as f:
+        return json.load(f)
 
-    test_db = client["edutask_test"]
 
-    with patch("src.util.dao.pymongo.MongoClient", return_value=client):
-
-        client.edutask = test_db
-
-        dao = DAO("user")
-        # print(dao.collection.database.name)
+@pytest.fixture
+def test_dao(validator):
+    with patch("src.util.dao.getValidator", return_value=validator):
+        dao = DAO("testing_integrtion")
         yield dao
-
-        test_db.drop_collection("user")
+        dao.drop()
 
 
 @pytest.mark.integration
