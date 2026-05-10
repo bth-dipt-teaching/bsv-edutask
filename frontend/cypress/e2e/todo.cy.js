@@ -3,59 +3,66 @@ describe('Todo tests', () => {
     let uid // user id
     let name // name of the user (firstName + ' ' + lastName)
     let email // email of the user
+    let taskId // task id
 
     const taskTitle = 'Test todo'
     const youtubeURL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
 
-    before(function () {
-        // create a fabricated user from a fixture
-        cy.fixture('user.json')
-            .then((user) => {
-                cy.request({
-                    method: 'POST',
-                    url: 'http://localhost:5000/users/create',
-                    form: true,
-                    body: user
-                }).then((response) => {
-                    uid = response.body._id.$oid
-                    name = user.firstName + ' ' + user.lastName
-                    email = user.email
+    beforeEach(() => {
 
-                    // login
-                    cy.visit('http://localhost:3000')
-                    cy.contains('div', 'Email Address')
-                        .find('input[type=text]')
-                        .type(email)
-                    cy.get('form')
-                        .submit()
+  cy.intercept('POST', '**/tasks/create').as('createTask')
+  cy.intercept('GET', '**/tasks/byid/*').as('tasksById')
 
-                    // create task
-                    cy.contains('div', 'Title')
-                        .find('input[type=text]')
-                        .type(taskTitle)
-                    cy.contains('div', 'YouTube URL')
-                        .find('input[type=text]')
-                        .type(youtubeURL)
-                    cy.get('form')
-                        .submit()
-                })
-            })
+  cy.fixture('user.json').then((user) => {
+
+    cy.request({
+      method: 'POST',
+      url: 'http://localhost:5000/users/create',
+      form: true,
+      body: user
+    }).then((response) => {
+
+      uid = response.body._id.$oid
+      email = user.email
+
+      cy.visit('http://localhost:3000')
+
+      cy.contains('div', 'Email Address')
+        .find('input[type=text]')
+        .type(email)
+
+      cy.get('form').submit()
+
+      return cy.fixture('task.json')
     })
+    .then((task) => {
 
-    beforeEach(function () {
-        // Navigate to the task todo page for evry test
-        cy.visit('http://localhost:3000')
-        cy.contains('div', 'Email Address')
-            .find('input[type=text]')
-            .type(email)
-        cy.get('form')
-            .submit()
-
-        cy.get('.title-overlay')
-            .first()
-            .click()
+      return cy.request({
+        method: 'POST',
+        url: 'http://localhost:5000/tasks/create',
+        form: true,
+        body: {
+          ...task,
+          userid: uid
+        }
+      })
     })
+    .then((response) => {
 
+      taskId = response.body._id
+
+      cy.visit('http://localhost:3000')
+
+      cy.contains('div', 'Email Address')
+        .find('input[type=text]')
+        .type(email)
+
+      cy.get('form').submit()
+
+      cy.get('.title-overlay').first().click()
+    })
+  })
+})
     it('Test add valid todo item', () => {
         const todoName = 'watch vid at 2x speed'
 
@@ -75,7 +82,29 @@ describe('Todo tests', () => {
             .should('be.disabled')
     })
 
-    it('Test toggle strikethrough todo item name', () => {
+// it('toggles todo correctly', () => {
+
+//   // ALWAYS re-query fresh DOM
+//   cy.get('.todo-item').first().as('item')
+
+//   cy.get('@item')
+//     .find('.checker')
+//     .click()
+
+//   cy.get('@item')
+//     .should('have.class', 'checked')
+
+//   // re-query AGAIN (viktigt!)
+//   cy.get('.todo-item').first()
+//     .find('.checker')
+//     .click()
+
+//   cy.get('.todo-item').first()
+//     .should('not.have.class', 'checked')
+// })
+
+    
+    it('Test toggle on and off strikethrough todo item name', () => {
         
         cy.get('.todo-item')
             .first()
@@ -86,9 +115,6 @@ describe('Todo tests', () => {
         .first()
         .find('.editable')
         .should('have.css', 'text-decoration-line', 'line-through')
-    })
-
-    it('Test untoggle strikethrough todo item name', () => {
 
         cy.get('.todo-item')
             .first()
@@ -101,23 +127,53 @@ describe('Todo tests', () => {
         .should('not.have.css', 'text-decoration-line', 'line-through')
     })
 
-    it  ('Test delete todo item', () => {
+    // it('Test untoggle strikethrough todo item name', () => {
+
+    //     cy.get('.todo-item')
+    //         .first()
+    //         .find('.checker')
+    //         .click()
         
-        cy.contains('.todo-item', 'Watch video')
-            .find('.remover')
-            .click()
+    //     cy.get('.todo-item')
+    //     .first()
+    //     .find('.editable')
+    //     .should('not.have.css', 'text-decoration-line', 'line-through')
+    // })
 
-        cy.contains('.todo-item', 'Watch video')
-            .should('not.exist')
-    })
+    it('Test delete todo item', () => {
 
-    after(function () {
-        // clean up by deleting the user from the database
+    cy.contains('.todo-item', 'Watch the video')
+        .find('.remover')
+        .click()
+
+    cy.wait('@tasksById')
+
+    cy.get('.todo-list > li.todo-item')
+        .should('have.length', 0)
+})
+
+    afterEach(function () {
+
+    // delete task
+    if (taskId) {
         cy.request({
             method: 'DELETE',
-            url: `http://localhost:5000/users/${uid}`
+            url: `http://localhost:5000/tasks/${taskId}`,
+            failOnStatusCode: false
         }).then((response) => {
             cy.log(response.body)
         })
-    })
+    }
+
+    // delete user
+    if (uid) {
+        cy.request({
+            method: 'DELETE',
+            url: `http://localhost:5000/users/${uid}`,
+            failOnStatusCode: false
+        }).then((response) => {
+            cy.log(response.body)
+        })
+    }
+})
 })
