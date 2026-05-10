@@ -37,22 +37,25 @@ class TestGetUserByEmail:
         #According to the docstring, the first user should be returned when there are multiple
         assert result == fake_user_1
     
-
-    def test_get_user_email_invalid_email(self, mock_dao):
+    
+    @pytest.mark.parametrize("input", [
+        ("invalid_email"),
+        (None) #Assumes 
+    ])
+    def test_get_user_email_invalid_email(self, mock_dao, input):
         #Arrange
-
         user_controller = UserController(mock_dao)
         #Act
         #Assert
         with pytest.raises(ValueError):
-            user_controller.get_user_by_email("invalid_email")
+            user_controller.get_user_by_email(input)
        
     
     def test_get_user_email_database_error(self, mock_dao):
         #Arrange
         #use of side_effect found in the unittest.mock documentation
         #"side_effect
-        # This can either be a function to be called when the mock is called, an iterable or an exception (class or instance) to be raised.""
+        # This can either be a function to be called when the mock is called, an iterable or an exception (class or instance) to be raised."
         mock_dao.find.side_effect = Exception("[Error] Database crached")
         user_controller = UserController(mock_dao)
         email = "valid.test@email.com"
