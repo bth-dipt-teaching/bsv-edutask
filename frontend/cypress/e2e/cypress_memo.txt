@@ -1,0 +1,27 @@
+Install all dependencies from frontend (npm install)
+
+Run all containers in docker (mongodb, backend, frontend) preferrably using docker desktop
+Verify user id on localhost:5000/users/all
+Login using existing id:email (for the test we use the mock, doe)
+
+Run cypress from frontend (npx cypress open)
+Run login.cy.js to verify login
+
+NB! Cypress cannot run testfiles in chain, have to duplicate the login and create new start state in new test file.
+
+Create new spec and open file in IDE
+
+.first(), last() is unreliable, better match exact phrase of desired task with .title-overlay, but must use unique strings in that case.
+
+Check .css or inspect webpage to find class-names
+
+Cypress can only access objects in view, use scrollIntoView() to make sure (error after multiples created without running the clear up)
+
+The clear up only runs if the code executes without errors.
+
+Double check you are using the . in the commands if erroneous (.command)
+
+Clear up manually from outside cypress using Postman (user-data fount in user.json)
+    GET http://localhost:5000/users/bymail/mon.doe@gmail.com
+    DELETE http://localhost:5000/users/<uid> (uid from the GET above)
+

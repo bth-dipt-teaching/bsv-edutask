@@ -1,4 +1,4 @@
-describe('E2E test of to-do', () => {
+describe('E2E test of to-do failures', () => {
   // Reused variables (code reused from login.cy.js)
   let uid // user id
   let name // name of the user (firstName + ' ' + lastName)
@@ -38,34 +38,6 @@ describe('E2E test of to-do', () => {
 
     cy.get('h1')
       .should('contain.text', 'Your tasks, ' + name)
-  })
-
-
-  it('R8UC1: TC1.1 Create new to-do', () => {
-    // Create task with title and youtube-affiliation
-    cy.get('#title')
-      .type('TC1.1 Create new to-do')
-    cy.get('#url')
-      .type('j_uu6bJ2IGI')
-    cy.contains('input[type="submit"]', 'Create new Task')
-      .click()
-
-    // Navigate to created task
-    cy.contains('.title-overlay', 'TC1.1 Create new to-do')
-      .click()
-
-    cy.get('.popup .todo-list', { timeout: 20000 })
-      .should('be.visible')
-
-    // Get created task, add to-do and verify visibility
-    cy.get('.popup input[placeholder="Add a new todo item"]')
-      .scrollIntoView()
-      .type('Test-todo 1')
-    cy.get('.popup input[value="Add"]')
-      .scrollIntoView()
-      .click()
-    cy.contains('.todo-item', 'Test-todo 1')
-      .should('be.visible')
   })
 
   it('R8UC1: TC1.2 Create new to-do with alternate chars', () => {
@@ -175,107 +147,6 @@ describe('E2E test of to-do', () => {
       .click()
     cy.contains('.todo-item', char_limit)
       .should('be.visible')
-  })
-
-  it('R8UC2: TC2.1 Toggle to-do active-complete and complete to active', () => {
-    // Create task with title and youtube-affiliation
-    cy.get('#title')
-      .scrollIntoView()
-      .type('TC2.1 Toggle to-do active-complete and complete to active')
-    cy.get('#url')
-      .scrollIntoView()
-      .type('j_uu6bJ2IGI')
-    cy.contains('input[type="submit"]', 'Create new Task')
-      .scrollIntoView()
-      .click()
-
-    // Navigate to created task and verify active/completed completed/active
-    cy.contains('.title-overlay', 'TC2.1 Toggle to-do active-complete and complete to active')
-      .scrollIntoView()
-      .click()
-    
-    cy.get('.popup .todo-list', { timeout: 20000 })
-      .should('be.visible')
-
-    cy.contains('.todo-item', 'Watch video')
-      .find('.checker')
-      .should('have.class', 'unchecked')
-    
-    cy.contains('.todo-item', 'Watch video')
-      .find('.checker')
-      .click()
-    
-    cy.contains('.todo-item', 'Watch video')
-      .find('.checker')
-      .should('have.class', 'checked')
-    
-    cy.contains('.todo-item', 'Watch video')
-      .find('.checker')
-      .click()
-    
-    cy.contains('.todo-item', 'Watch video')
-      .find('.checker')
-      .should('have.class', 'unchecked')
-  })
-
-  it('R8UC3: TC3.1 Delete to-do (active)', () => {
-    // Create task with title and youtube-affiliation
-    cy.get('#title')
-      .type('TC3.1 Delete to-do (active)')
-    cy.get('#url')
-      .type('j_uu6bJ2IGI')
-    cy.contains('input[type="submit"]', 'Create new Task')
-      .click()
-
-    // Navigate to created task and delete
-    cy.contains('.title-overlay', 'TC3.1 Delete to-do (active)')
-      .click()
-
-    cy.get('.popup .todo-list', { timeout: 20000 })
-      .should('be.visible')
-    
-    cy.contains('.todo-item', 'Watch video')
-      .find('.remover')
-      .click()
-    
-    cy.contains('.todo-item', 'Watch video', { timeout: 20000 })
-      .should('not.exist')
-  })
-
-  it('R8UC3: TC3.2 Delete to-do (completed)', () => {
-    // Create task with title and youtube-affiliation
-    cy.get('#title')
-      .type('TC3.2 Delete to-do (completed)')
-    cy.get('#url')
-      .type('j_uu6bJ2IGI')
-    cy.contains('input[type="submit"]', 'Create new Task')
-      .click()
-
-    // Navigate to created task and complete then delete
-    cy.contains('.title-overlay', 'TC3.2 Delete to-do (completed)')
-      .click()
-
-    cy.get('.popup .todo-list', { timeout: 20000 })
-      .should('be.visible')
-
-    cy.contains('.todo-item', 'Watch video')
-      .find('.checker')
-      .should('have.class', 'unchecked')
-    
-    cy.contains('.todo-item', 'Watch video')
-      .find('.checker')
-      .click()
-    
-    cy.contains('.todo-item', 'Watch video')
-      .find('.checker')
-      .should('have.class', 'checked')
-    
-    cy.contains('.todo-item', 'Watch video')
-      .find('.remover')
-      .click()
-    
-    cy.contains('.todo-item', 'Watch video')
-      .should('not.exist')
   })
 
   // Code reused from login.cy.js to clear test-data
