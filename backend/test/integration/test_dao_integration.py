@@ -1,13 +1,34 @@
 import pytest
 from src.util.dao import DAO
 from unittest.mock import patch
+from pymongo.errors import WriteError
 
+validator = {
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["firstName", "lastName", "email"],
+        "properties": {
+            "firstName": {
+                "bsonType": "string",
+            }, 
+            "lastName": {
+                "bsonType": "string",
+            },
+            "email": {
+                "bsonType": "string",
+            }
+        }
+    }
+}
 @pytest.fixture
 def dao():
-    with patch('src.util.validators.getValidator') as mock_validator:
-        mock_validator.return_value = {}
+    with patch('src.util.dao.getValidator') as mock_validator:
+        mock_validator.return_value = validator
         dao = DAO("user")
         dao.drop()
+        dao = DAO("user")
+
+        dao.collection.create_index("email", unique=True)
         yield dao
         dao.drop()
 
@@ -34,8 +55,8 @@ def test_create_missing_field(dao):
         "email": "name@test.com"
     }
 
-    result = dao.create(data)
-    assert result is not None
+    with pytest.raises(WriteError):
+        dao.create(data)
 
 @pytest.mark.integration
 def test_create_wrong_type(dao):
@@ -45,8 +66,8 @@ def test_create_wrong_type(dao):
         "email": 12345 
     }
 
-    result = dao.create(data)
-    assert result is not None
+    with pytest.raises(WriteError):
+        dao.create(data)
 
 @pytest.mark.integration
 def test_create_duplicate_email(dao):
@@ -58,5 +79,5 @@ def test_create_duplicate_email(dao):
 
     dao.create(data)
     
-    result = dao.create(data)
-    assert result is not None
+    with pytest.raises(WriteError):
+        dao.create(data)
