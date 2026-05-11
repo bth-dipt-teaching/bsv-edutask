@@ -1,140 +1,122 @@
-import pytest  # type: ignore
-from src.util.daos import getDao
+import pytest # type: ignore
+from unittest.mock import patch
+from pymongo.errors import WriteError # type: ignore
+
+from src.util.dao import DAO
 
 
-# ---------------- FIXTURES ----------------
+MOCK_VALIDATOR = {
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["title"],
+        "properties": {
+            "title": {
+                "bsonType": "string"
+            },
+            "done": {
+                "bsonType": "bool"
+            }
+        }
+    }
+}
+
 
 @pytest.fixture
 def task_dao():
-    dao = getDao("task")
-    dao.drop()
-    yield dao
-    dao.drop()
+    with patch("src.util.dao.getValidator", return_value=MOCK_VALIDATOR):
+        dao = DAO("task")
+        dao.drop()
 
+        dao = DAO("task")
 
-@pytest.fixture
-def video_dao():
-    dao = getDao("video")
-    dao.drop()
-    yield dao
-    dao.drop()
+        yield dao
 
+        dao.drop()
 
-@pytest.fixture
-def todo_dao():
-    dao = getDao("todo")
-    dao.drop()
-    yield dao
-    dao.drop()
-
-
-# ---------------- TASK TESTS ----------------
 
 @pytest.mark.integration
-def test_create_task_valid(task_dao):
+def test_create_valid_document(task_dao):
     data = {
         "title": "task1",
-        "description": "desc"
+        "done": False
     }
 
     result = task_dao.create(data)
 
     assert result["title"] == "task1"
-    assert result["description"] == "desc"
-    assert "_id" in result
-
-
-@pytest.mark.integration
-def test_create_task_missing_title(task_dao):
-    data = {
-        "description": "desc"
-    }
-
-    with pytest.raises(Exception):
-        task_dao.create(data)
-
-
-@pytest.mark.integration
-def test_create_task_title_not_string(task_dao):
-    data = {
-        "title": 123,
-        "description": "desc"
-    }
-
-    with pytest.raises(Exception):
-        task_dao.create(data)
-
-
-@pytest.mark.integration
-def test_create_task_startdate_not_date(task_dao):
-    data = {
-        "title": "task2",
-        "description": "desc",
-        "startdate": "today"
-    }
-
-    with pytest.raises(Exception):
-        task_dao.create(data)
-
-
-@pytest.mark.integration
-def test_create_task_video_not_objectid(task_dao):
-    data = {
-        "title": "task3",
-        "description": "desc",
-        "video": "not_an_objectid"
-    }
-
-    with pytest.raises(Exception):
-        task_dao.create(data)
-
-
-# ---------------- VIDEO TESTS ----------------
-
-@pytest.mark.integration
-def test_create_video_valid(video_dao):
-    data = {
-        "url": "www.test.com"
-    }
-
-    result = video_dao.create(data)
-
-    assert result["url"] == "www.test.com"
-    assert "_id" in result
-
-
-@pytest.mark.integration
-def test_create_video_invalid_type(video_dao):
-    data = {
-        "url": 123
-    }
-
-    with pytest.raises(Exception):
-        video_dao.create(data)
-
-
-# ---------------- TODO TESTS ---------------
-
-@pytest.mark.integration
-def test_create_todo_valid(todo_dao):
-    data = {
-        "description": "todo item",
-        "done": False
-    }
-
-    result = todo_dao.create(data)
-
-    assert result["description"] == "todo item"
     assert result["done"] is False
     assert "_id" in result
 
 
 @pytest.mark.integration
-def test_create_todo_done_not_bool(todo_dao):
+def test_create_returns_created_object_with_id(task_dao):
     data = {
-        "description": "todo item",
+        "title": "task2"
+    }
+
+    result = task_dao.create(data)
+
+    assert result["title"] == "task2"
+    assert "_id" in result
+    assert "$oid" in result["_id"]
+
+
+@pytest.mark.integration
+def test_create_document_is_saved_in_database(task_dao):
+    created = task_dao.create({
+        "title": "task3",
+        "done": True
+    })
+
+    found = task_dao.findOne(created["_id"]["$oid"])
+
+    assert found["title"] == "task3"
+    assert found["done"] is True
+    assert found["_id"] == created["_id"]
+
+
+@pytest.mark.integration
+def test_create_missing_required_field_fails(task_dao):
+    data = {
+        "done": False
+    }
+
+    with pytest.raises(WriteError):
+        task_dao.create(data)
+
+
+@pytest.mark.integration
+def test_create_wrong_field_type_fails(task_dao):
+    data = {
+        "title": 123,
+        "done": False
+    }
+
+    with pytest.raises(WriteError):
+        task_dao.create(data)
+
+
+@pytest.mark.integration
+def test_create_optional_field_wrong_type_fails(task_dao):
+    data = {
+        "title": "task4",
         "done": "False"
     }
 
-    with pytest.raises(Exception):
-        todo_dao.create(data)
+    with pytest.raises(WriteError):
+        task_dao.create(data)
+
+
+@pytest.mark.integration
+def test_create_multiple_valid_documents(task_dao):
+    task_dao.create({"title": "task1"})
+    task_dao.create({"title": "task2", "done": True})
+
+    results = task_dao.find()
+
+    assert len(results) == 2
+
+    titles = [task["title"] for task in results]
+
+    assert "task1" in titles
+    assert "task2" in titles
