@@ -64,7 +64,7 @@ describe('Logging into the system', () => {
     })
 
     it('should set active todo item to done and strike it through', () => {
-      cy.contains('.todo-item', 'Study').as('todotestitem');
+      cy.contains('.todo-item', 'Study components').as('todotestitem');
 
       cy.get('@todotestitem').find('span.checker').click()
 
@@ -74,7 +74,7 @@ describe('Logging into the system', () => {
     })
 
     it('should set done todo item back to active', () => {
-      cy.contains('.todo-item', 'Study').as('todotestitem');
+      cy.contains('.todo-item', 'Study components').as('todotestitem');
 
       cy.get('@todotestitem').find('span.checker').click()
 
@@ -88,13 +88,10 @@ describe('Logging into the system', () => {
     })
 
     it('deletes a todo item when pressing x button', () => {
-      cy.contains('.todo-item', 'Study').as('todotestitem');
+      cy.contains('.todo-item', 'Study components').as('todotestitem');
 
-      cy.get('@todotestitem').find('span.remover').click();
+      cy.get('@todotestitem').find('span.remover').click()
 
-      cy.contains('.todo-item', 'Study').should('not.exist');
+      cy.get('.todo-list').children('.todo-item').should('not.contain.text', 'Study components');
     })
-
-
-
   });
