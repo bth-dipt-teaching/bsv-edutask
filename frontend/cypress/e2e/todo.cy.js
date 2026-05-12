@@ -32,13 +32,13 @@ describe('Manipulating todos of the system', () => {
   })
 
   beforeEach(function () {
-      // enter the main main page
+      // enter the main page
       cy.visit('http://localhost:3001')
 
+      // login
       cy.contains('div', 'Email Address')
         .find('input[type=text]')
         .type(email)
-
       cy.get('form')
         .submit()
 
@@ -55,19 +55,20 @@ describe('Manipulating todos of the system', () => {
       .closest('form')
       .submit()
 
-    // assert that the new todo is in the list of todos
+    // check that the new todo is in the list of todos and that it is the last entry in the list
     cy.get('ul.todo-list')
       .find('li.todo-item')
       .last()
       .should('contain.text', 'New todo')
   })
 
-  // assert that the "Add" button is disabled when the input field is empty
+  // check that the "Add" button is disabled when the input field is empty
   it('R8UC1: Add todo disabled', () => {
     cy.get('input[type="submit"][value="Add"]')
       .should('be.disabled')
   })
 
+  // check that the todo item can be set to done
   it('R8UC2: Toggle todo status', () => {
     cy.get('ul.todo-list')
       .find('li.todo-item')
@@ -77,6 +78,7 @@ describe('Manipulating todos of the system', () => {
       .should('have.class', 'checked')
   })
 
+  // check that the todo item can be toggled back to active
   it('R8UC2: Untoggle todo status', () => {
     cy.get('ul.todo-list')
       .find('li.todo-item')
@@ -86,9 +88,11 @@ describe('Manipulating todos of the system', () => {
       .should('have.class', 'unchecked')
   })
 
+  // check that todo item can be deleted
   it('R8UC3: Delete a todo item', () => {
     cy.get('ul.todo-list li.todo-item').last().find('span.remover').click()
 
+    // assert that the deleted todo item is no longer in the list of todos
     cy.get('ul.todo-list li.todo-item .editable').each((element) => {
       expect(element.text()).to.not.equal('New todo')
     })

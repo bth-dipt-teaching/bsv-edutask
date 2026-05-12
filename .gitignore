@@ -35,5 +35,5 @@ backend/test/solutions/
 frontend/cypress/e2e/r8uc1-solution.cy.js
 frontend/cypress/e2e/r8uc2-solution.cy.js
 frontend/cypress/e2e/r8uc3-solution.cy.js
-frontend/cypress/videos/
-frontend/cypress/screenshots/
+#frontend/cypress/videos/
+#frontend/cypress/screenshots/
