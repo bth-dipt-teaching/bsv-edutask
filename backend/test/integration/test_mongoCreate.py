@@ -22,7 +22,7 @@ def test_dao(validator):
         yield dao
         dao.drop()
 
-
+#valid cases
 @pytest.mark.integration
 def test_create_valid_user(test_dao):
     data = {"firstName": "John", "lastName": "Doe", "email": "john@example.com"}
@@ -62,91 +62,39 @@ def test_extra_field_allowed(test_dao):
 
     assert result["number"] == 21
 
-
+#invalid cases
 @pytest.mark.integration
-def test_missing_firstname(test_dao):
-    data = {"lastName": "Doe", "email": "john@example.com"}
+@pytest.mark.parametrize(
+    "data",
+    [
+        # Missing required fields
+        {"lastName": "Doe", "email": "john@example.com"},
+        {"firstName": "John", "email": "john@example.com"},
+        {"firstName": "John", "lastName": "Doe"},
+        {},
 
-    with pytest.raises(WriteError):
-        test_dao.create(data)
+        # Wrong field types
+        {"firstName": 123, "lastName": "Doe", "email": "john@example.com"},
+        {"firstName": "John", "lastName": True, "email": "john@example.com"},
+        {"firstName": "John", "lastName": "Doe", "email": False},
+        {"firstName": "John", "lastName": "Doe", "email": None},
 
-
-@pytest.mark.integration
-def test_missing_lastname(test_dao):
-    data = {"firstName": "John", "email": "john@example.com"}
-
-    with pytest.raises(WriteError):
-        test_dao.create(data)
-
-
-@pytest.mark.integration
-def test_missing_email(test_dao):
-    data = {"firstName": "John", "lastName": "Doe"}
-
-    with pytest.raises(WriteError):
-        test_dao.create(data)
-
-
-@pytest.mark.integration
-def test_empty_user(test_dao):
-    with pytest.raises(WriteError):
-        test_dao.create({})
-
-
-@pytest.mark.integration
-def test_wrong_type_firstname(test_dao):
-    data = {"firstName": 123, "lastName": "Doe", "email": "john@example.com"}
-
-    with pytest.raises(WriteError):
-        test_dao.create(data)
-
-
-@pytest.mark.integration
-def test_wrong_type_lastname(test_dao):
-    data = {"firstName": "John", "lastName": True, "email": "john@example.com"}
-
-    with pytest.raises(WriteError):
-        test_dao.create(data)
-
-
-@pytest.mark.integration
-def test_wrong_type_email(test_dao):
-    data = {"firstName": "John", "lastName": "Doe", "email": False}
-
-    with pytest.raises(WriteError):
-        test_dao.create(data)
-
-
-@pytest.mark.integration
-def test_null_email(test_dao):
-    data = {"firstName": "John", "lastName": "Doe", "email": None}
-
-    with pytest.raises(WriteError):
-        test_dao.create(data)
-
-
-@pytest.mark.integration
-def test_tasks_not_array(test_dao):
-    data = {
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "john@example.com",
-        "tasks": "not_array",
-    }
-
-    with pytest.raises(WriteError):
-        test_dao.create(data)
-
-
-@pytest.mark.integration
-def test_tasks_wrong_item_type(test_dao):
-    data = {
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "john@example.com",
-        "tasks": ["not_objectid"],
-    }
-
+        # Invalid tasks
+        {
+            "firstName": "John",
+            "lastName": "Doe",
+            "email": "john@example.com",
+            "tasks": "not_array",
+        },
+        {
+            "firstName": "John",
+            "lastName": "Doe",
+            "email": "john@example.com",
+            "tasks": ["not_objectid"],
+        },
+    ],
+)
+def test_create_invalid_users(test_dao, data):
     with pytest.raises(WriteError):
         test_dao.create(data)
 
