@@ -31,7 +31,17 @@ describe('To-Do Integration Test', () => {
     cy.get('.container-element a', { timeout: 100 }).first().click();
   });
 
-  it('add a to do', () => {
+
+const addToDo = (todoText) => {
+    cy.get('.todo-list', { timeout: 2000 }).within(() => {
+      cy.get('form.inline-form').within(() => {
+        cy.get('input[type=text]').type(todoText); 
+        cy.get('input[type=submit]').click();
+      });
+    });
+  };
+
+  it('R8UC1 add a to do TC1', () => {
     const todoText = 'Buy groceries';
 
     cy.get('.todo-list', { timeout: 1000 }).within(() => {
@@ -40,16 +50,51 @@ describe('To-Do Integration Test', () => {
         cy.get('input[type=text]').should('be.empty');
         cy.get('input[type=submit]').should('be.disabled');
 
-
         cy.get('input[type=text]').type(todoText);
         cy.get('input[type=submit]').should('not.be.disabled').click();
-
-
       });
     });
 
     cy.contains('.todo-item', todoText).should('exist');
   });
+
+   it('R8UC1 add a to do TC2', () => {
+    cy.get('.todo-list').within(() => {
+      cy.get('form.inline-form').within(() => {
+        cy.get('input[type=text]').should('be.empty');
+        cy.get('input[type=submit]').should('be.disabled'); 
+      });
+    });
+  });
+
+
+  it('R8UC2 toggle TC1', () => {
+    const todoText = 'Buy groceries';
+
+    addToDo(todoText);
+
+    cy.contains('.todo-item', todoText, { timeout: 1000 }).should('exist').within(() => {
+      cy.get('.checker', { timeout: 1000 }).click();
+      cy.get('.checker').should('have.class', 'checked');
+
+      cy.get('.checker', { timeout: 1000 }).click();
+      cy.get('.checker').should('not.have.class', 'checked');
+    });
+  });
+
+
+  it('R8UC3 delete', () => {
+    const todoText = 'Buy groceries';
+
+    addToDo(todoText);
+
+    cy.contains('.todo-item', todoText, { timeout: 1000 }).should('exist')
+
+    cy.contains('.todo-item' , todoText).find('.remover').click();
+
+    cy.contains('.todo-item', todoText).should('not.exist');
+  });
+
 
   after(() => {
     cy.request({
