@@ -21,8 +21,7 @@ describe("Requirement R8 : Manipulate todo items", () => {
     });
 
     beforeEach(() => {
-        // Override the view port settings, otherwise cypress cant find items that go out of its bounds in cypress tooling.
-        // Found at https://docs.cypress.io/api/commands/viewport
+        
         cy.viewport(1080, 1920);
 
         // Create a fresh task.json
