@@ -22,7 +22,7 @@ def test_get_user_by_email_invalid(user_controller, dao_mock):
 @pytest.mark.unit
 def test_get_user_by_email_valid_email_no_user(user_controller, dao_mock):
     # arrange
-    dao_mock.find.return_value = [None]
+    dao_mock.find.return_value = []
     
     # act
     result = user_controller.get_user_by_email("email@example.com")
