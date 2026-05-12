@@ -30,6 +30,7 @@ jobs:
 
     - name: Unit Tests
       run: |
+        cd backend
         python -m pytest -m unit
         
 #    - name: Integration Tests
