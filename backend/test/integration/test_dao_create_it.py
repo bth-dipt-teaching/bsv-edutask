@@ -45,6 +45,7 @@ def dao(patcher):
     yield dao
     dao.drop()
 
+@pytest.mark.integration
 class TestDaoCreateIT:
 
     @pytest.mark.parametrize("valid_obj", [

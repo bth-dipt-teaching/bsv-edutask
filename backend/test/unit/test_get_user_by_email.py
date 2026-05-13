@@ -6,6 +6,7 @@ from src.controllers.usercontroller import UserController
 def mock_dao():
     return mock.MagicMock()
 
+@pytest.mark.unit
 class TestGetUserByEmail:
 
     # The following two test functions (single_valid and multiple_valid) test similar scenarios
