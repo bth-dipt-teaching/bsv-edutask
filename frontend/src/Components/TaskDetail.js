@@ -125,7 +125,7 @@ function TaskDetail({ taskid, updateTasks }) {
                     }
                     <li key='newtodo'>
                         <form onSubmit={addTodo} className='inline-form'>
-                            <input type='text' onChange={e => setTodo(e.target.value)} value={todo} placeholder='Add a new todo item'></input>
+                        <input type='text' onChange={e => setTodo(e.target.value)} value={todo} placeholder='Add a new todo item'></input>
                             <input type='submit' value='Add'></input>
                         </form>
                     </li>

@@ -42,3 +42,8 @@ class TestValidationHelper2:
     def test_validateAge(self, sut):
         validationresult = sut.validateAge(userid=None)
         assert validationresult == 'valid'
+
+    @pytest.mark.demo
+    def test_validateAge(self, sut):
+        validationresult = sut.validateAge(userid=None)
+        assert validationresult == 'valid'
