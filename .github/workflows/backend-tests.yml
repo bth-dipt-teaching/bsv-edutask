@@ -3,12 +3,12 @@ name: Backend Unit Tests
 on:
   push:
     branches:
-      - main
+      - master
       - unit-tests
 
   pull_request:
     branches:
-      - main
+      - master
       - unit-tests
 
   workflow_dispatch:
