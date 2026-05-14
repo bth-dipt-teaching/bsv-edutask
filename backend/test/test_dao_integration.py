@@ -1,6 +1,10 @@
 import pytest
 from src.util.dao import DAO
 
+class MockValidator:
+    def validate(self, data):
+        return True
+        
 
 
 class MockInsertResult:
@@ -39,6 +43,7 @@ class MockCollection:
 def dao_valid():
     dao = DAO.__new__(DAO)
     dao.collection = MockCollection("valid")
+    dao.validator = MockValidator()
     return dao
 
 
@@ -46,6 +51,7 @@ def dao_valid():
 def dao_missing():
     dao = DAO.__new__(DAO)
     dao.collection = MockCollection("missing")
+    dao.validator = MockValidator()
     return dao
 
 
@@ -53,6 +59,7 @@ def dao_missing():
 def dao_invalid():
     dao = DAO.__new__(DAO)
     dao.collection = MockCollection("invalid_type")
+    dao.validator = MockValidator()
     return dao
 
 
@@ -60,6 +67,7 @@ def dao_invalid():
 def dao_duplicate():
     dao = DAO.__new__(DAO)
     dao.collection = MockCollection("duplicate")
+    dao.validator = MockValidator()
     return dao
 
 
@@ -67,6 +75,7 @@ def dao_duplicate():
 def dao_fail():
     dao = DAO.__new__(DAO)
     dao.collection = MockCollection("db_fail")
+    dao.validator = MockValidator()
     return dao
 
 
