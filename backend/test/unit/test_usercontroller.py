@@ -28,7 +28,11 @@ def test_multiple_users(mock_dao):
     assert result["email"] == "user@test.com"
 
 
+def test_invalid_email(mock_dao):
+    controller = UserController(mock_dao)
 
+    with pytest.raises(ValueError):
+        controller.get_user_by_email("invalid-email")
 
 
 def test_no_user_found(mock_dao):
@@ -38,4 +42,3 @@ def test_no_user_found(mock_dao):
 
     with pytest.raises(IndexError):
         controller.get_user_by_email("user@test.com")
-
