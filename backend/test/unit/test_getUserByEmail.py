@@ -30,11 +30,18 @@ def test_getUserByEmail_zero_users(daoMock, capsys):
 
     res = daoMock.get_user_by_email("user@hotmail.com")
 
-    # Check the print error message as well, capture with capsys
+    assert res == None
+
+@pytest.mark.unit
+def test_getUserByEmail_zero_users_error_msg(daoMock, capsys):
+    # Mock find user from dao - return empty list
+    daoMock.dao.find.return_value = []
+
+    daoMock.get_user_by_email("user@hotmail.com")
+
+    # Check the print error message, capture with capsys
     captured = capsys.readouterr()
     assert captured.out.strip() == 'Error: no user found'
-
-    assert res == None
 
 @pytest.mark.unit
 def test_getUserByEmail_valid_oneUser(daoMock):
@@ -54,10 +61,18 @@ def test_getUserByEmail_valid_moreUsers(daoMock, capsys):
 
     res = daoMock.get_user_by_email("user@hotmail.com")
 
+    assert res == expected
+
+@pytest.mark.unit
+def test_getUserByEmail_valid_moreUsers_error_msg(daoMock, capsys):
+    # Mock find user from dao
+    daoMock.dao.find.return_value = [{"email": "user@hotmail.com"}, {"email": "user@hotmail.com"}]
+
+    daoMock.get_user_by_email("user@hotmail.com")
+
     # Check the print error message as well, capture with capsys
     captured = capsys.readouterr()
     assert captured.out.strip() == 'Error: more than one user found with mail user@hotmail.com'
-    assert res == expected
 
 
 @pytest.mark.unit
