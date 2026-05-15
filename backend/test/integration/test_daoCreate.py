@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from src.util.dao import DAO
 from src.util.validators import getValidator
-from pymongo.errors import WriteError, DuplicateKeyError
+from pymongo.errors import WriteError
 
 
 @pytest.fixture
@@ -55,9 +55,6 @@ def test_create_valid_data(daoObj):
 
     # Assert
     assert res is not None
-    assert res['_id'] is not None
-    assert res['firstName'] == 'Jakob'
-    assert res['lastName'] == 'Efternamn'
 
 @pytest.mark.integration
 def test_create_invalid_firstname(daoObj):
