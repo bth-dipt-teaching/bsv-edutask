@@ -37,4 +37,4 @@ frontend/cypress/fixtures/task.json
 frontend/cypress/e2e/r8uc2-solution.cy.js
 frontend/cypress/e2e/r8uc3-solution.cy.js
 
-/data/db-test
+/data/db_test
