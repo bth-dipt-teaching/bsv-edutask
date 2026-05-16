@@ -44,40 +44,17 @@ function TaskView(props) {
   return (
     <div>
       {tasks.length === 0 ?
-        <p>
-          Here you find the space to organize the educational videos you are interested in and associate them with todo items. Start by pasting the view key of a YouTube video as well as a title of the task in the form below.
-        </p>
-        :
-        <p>
-          Here you can find your {tasks.length} task{tasks.length === 1 ? '' : 's'}. Click on each thumbnail in the list to add, update, or delete the todo items you have associated to this video.
-        </p>
-      }
-
+        <p>Here you find the space to organize the educational videos you are interested in and associate them with todo items. Start by pasting the view key of a YouTube video as well as a title of the task in the form below.</p>
+        : <p>Here you can find your {tasks.length} task{tasks.length === 1 ? '' : 's'}. Click on each thumbnail in the list to add, update, or delete the todo items you have associated to this video.</p>}
       <div className='container'>
-
         {tasks.map(task =>
-
           <div className='container-element' key={task.id}>
-
             <a onClick={() => { setTrigger(true); setFocus(task) }}>
-
-              <img
-                data-testid="task-thumbnail"
-                src={`http://i3.ytimg.com/vi/${task.url}/hqdefault.jpg`}
-                alt=''
-              />
-
-              {task.done
-                ? <div className="done-overlay"><div className="done-check"></div></div>
-                : <div></div>
-              }
-
+              <img src={`http://i3.ytimg.com/vi/${task.url}/hqdefault.jpg`} alt='' />
+              { task.done ? <div className="done-overlay"><div className="done-check"></div></div> : <div></div>}
               <div className="title-overlay">{task.title}</div>
-
             </a>
-
-          </div>
-        )}
+          </div>)}
 
         <div className='container-element' key='newtask'>
           <TaskCreator userid={props.user._id} setTasks={setTasks} />
@@ -88,9 +65,7 @@ function TaskView(props) {
             <TaskDetail taskid={focus._id} updateTasks={updateTasks} />
           </Popup>
         }
-
       </div>
-
     </div>
   );
 }

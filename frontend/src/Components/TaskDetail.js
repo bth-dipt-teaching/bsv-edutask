@@ -56,6 +56,7 @@ function TaskDetail({ taskid, updateTasks }) {
                 console.error(error)
             });
 
+        
         setTodo("");
     }
 
@@ -114,60 +115,21 @@ function TaskDetail({ taskid, updateTasks }) {
                 <a href={`https://www.youtube.com/watch?v=${task.url}`} target='_blank' rel="noreferrer">
                     <img src={`http://i3.ytimg.com/vi/${task.url}/hqdefault.jpg`} alt='' />
                 </a>
-
                 <ul className='todo-list'>
-
                     {todos.map(todo =>
-
                         <li key={todo._id} className='todo-item'>
-
-                            <span
-                                data-testid="toggle-todo"
-                                className={'checker ' + (todo.done ? 'checked' : 'unchecked')}
-                                onClick={() => toggleTodo(todo)}>
-                            </span>
-
-                            <Editable
-                                objectname="todos"
-                                object={todo}
-                                variablename="description"
-                                updateTasks={updateTasks}
-                            />
-
-                            <span
-                                data-testid="delete-todo"
-                                className='remover'
-                                onClick={() => deleteTodo(todo)}>
-                                &#x2716;
-                            </span>
-
-                        </li>
-                    )}
-
+                            <span className={'checker ' + (todo.done ? 'checked' : 'unchecked')} onClick={() => toggleTodo(todo)}></span>
+                            <Editable objectname="todos" object={todo} variablename="description" updateTasks={updateTasks} />
+                            <span className='remover' onClick={() => deleteTodo(todo)}>&#x2716;</span>
+                        </li>)
+                    }
                     <li key='newtodo'>
-
                         <form onSubmit={addTodo} className='inline-form'>
-
-                            <input
-                                data-testid="todo-input"
-                                type='text'
-                                onChange={e => setTodo(e.target.value)}
-                                value={todo}
-                                placeholder='Add a new todo item'>
-                            </input>
-
-                            <input
-                                data-testid="add-todo-btn"
-                                type='submit'
-                                value='Add'>
-                            </input>
-
+                            <input type='text' onChange={e => setTodo(e.target.value)} value={todo} placeholder='Add a new todo item'></input>
+                            <input type='submit' value='Add'></input>
                         </form>
-
                     </li>
-
                 </ul>
-
             </div>
     );
 }

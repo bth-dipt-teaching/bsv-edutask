@@ -2,7 +2,7 @@ describe('R8 Todo Tests', () => {
 
   beforeEach(() => {
 
-    cy.visit('http://localhost:3001')
+    cy.visit('http://localhost:3000')
 
     // Open signup page
     cy.contains('Click here to sign up')
@@ -10,7 +10,7 @@ describe('R8 Todo Tests', () => {
 
     // Fill signup form
     cy.get('input').eq(0)
-      .type('test@example.com')
+      .type(`test${Date.now()}@example.com`)
 
     cy.get('input').eq(1)
       .type('Test')
@@ -55,14 +55,15 @@ describe('R8 Todo Tests', () => {
   // R8UC2 - Toggle Todo
   it('toggles a todo item', () => {
 
-    // Create todo first
     cy.get('input[placeholder="Add a new todo item"]')
       .type('Toggle Todo')
 
     cy.contains('Add')
       .click()
 
-    // Click todo item to toggle
+    cy.contains('Toggle Todo')
+      .should('exist')
+
     cy.contains('Toggle Todo')
       .click({ force: true })
 
@@ -71,17 +72,31 @@ describe('R8 Todo Tests', () => {
   // R8UC3 - Delete Todo
   it('deletes a todo item', () => {
 
-    // Create todo first
     cy.get('input[placeholder="Add a new todo item"]')
       .type('Delete Todo')
 
     cy.contains('Add')
       .click()
 
-    // Delete todo
+    cy.contains('Delete Todo')
+      .should('exist')
+
     cy.get('button')
       .last()
       .click({ force: true })
+
+  })
+
+    // Validation Test - Empty Todo
+  it('should not add an empty todo item', () => {
+
+    // Click Add without entering text
+    cy.contains('Add')
+      .click()
+
+    // Expect no todo to be added
+    cy.contains('')
+      .should('not.exist')
 
   })
 
