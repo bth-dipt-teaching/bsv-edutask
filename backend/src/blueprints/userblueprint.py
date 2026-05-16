@@ -17,6 +17,7 @@ user_blueprint = Blueprint('user_blueprint', __name__)
 @cross_origin()
 def create_user():
     data = request.form.to_dict()
+    data["tasks"] = []
     user = None
     try:
         user = controller.create(data)
