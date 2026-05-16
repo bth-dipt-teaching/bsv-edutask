@@ -25,16 +25,22 @@ class UserController(Controller):
             Exception -- in case any database operation fails
         """
 
-        if not re.fullmatch(emailValidator, email):
+        if not re.fullmatch(emailValidator, email) or email.startswith('@'):
             raise ValueError('Error: invalid email address')
 
         try:
-            users = self.dao.find({'email': email})
-            if len(users) == 1:
+           users = self.dao.find({'email': email})
+
+           if len(users) == 0:
+                return None
+
+           elif len(users) == 1:
                 return users[0]
-            else:
+
+           else:
                 print(f'Error: more than one user found with mail {email}')
                 return users[0]
+
         except Exception as e:
             raise
 

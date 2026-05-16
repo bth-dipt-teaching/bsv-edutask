@@ -34,7 +34,7 @@ def test_invalid_email_raises_value_error(controller):
 def test_invalid_email_missing_local_part(controller, mock_dao):
     mock_dao.find.return_value = []
 
-    with pytest.raises(IndexError):
+    with pytest.raises(ValueError):
         controller.get_user_by_email("@test.com")
 
 
