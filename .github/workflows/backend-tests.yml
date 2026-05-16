@@ -19,7 +19,10 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pytest pytest-cov pymongo
+          pip install pytest
+          pip install pytest-cov
+          pip install pymongo
+          pip install python-dotenv
 
       - name: Run Unit Tests
         run: |
