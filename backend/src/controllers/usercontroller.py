@@ -2,8 +2,7 @@ from src.controllers.controller import Controller
 from src.util.dao import DAO
 
 import re
-# Validates that email has a non-empty local part, @, and non-empty domain
-emailValidator = re.compile(r'^[^@\s]+@[^@\s]+$')
+emailValidator = re.compile(r'.*@.*')
 
 class UserController(Controller):
     def __init__(self, dao: DAO):
@@ -22,11 +21,11 @@ class UserController(Controller):
             None -- if no user is associated to that email address
 
         raises:
-            ValueError -- in case the email parameter is not valid (i.e., conforming <local-part>@<domain>)
+            ValueError -- in case the email parameter is not valid (i.e., conforming <local-part>@<domain>.<host>)
             Exception -- in case any database operation fails
         """
 
-        if not isinstance(email, str) or not re.fullmatch(emailValidator, email):
+        if not re.fullmatch(emailValidator, email):
             raise ValueError('Error: invalid email address')
 
         try:
