@@ -9,7 +9,7 @@ describe("R8 - Todo GUI Testing", () => {
 
       const uniqueEmail = `test${Date.now()}@gmail.com`;
 
-      // switch to signup mode
+      // Sign up a new user before each test
       cy.contains("Have no account yet? Click here to sign up.").click();
 
       cy.get("#email").type(uniqueEmail);
@@ -39,7 +39,9 @@ describe("R8 - Todo GUI Testing", () => {
 
     cy.contains(task.title).click();
 
-    cy.get('input[placeholder="Add a new todo item"]').should("exist");
+    cy.get('input[placeholder="Add a new todo item"]', {
+      timeout: 10000,
+    }).should("exist");
   };
 
   // -------------------------
@@ -57,30 +59,44 @@ describe("R8 - Todo GUI Testing", () => {
 
   // -------------------------
   // R8UC1 - Alternative Scenario
+  // Empty todo should not be created
   // -------------------------
   it("R8UC1 - should not create an empty todo item", () => {
     createAndOpenTask();
 
     cy.get('input[placeholder="Add a new todo item"]').should("have.value", "");
+    cy.contains("Add").then(($button) => {
+      const isDisabled = $button.prop("disabled");
 
-    cy.get(".todo-item").then(($itemsBefore) => {
-      const countBefore = $itemsBefore.length;
+      if (isDisabled) {
+        cy.wrap($button).should("be.disabled");
+      } else {
+        cy.get(".todo-item").then(($itemsBefore) => {
+          const countBefore = $itemsBefore.length;
 
-      cy.contains("Add").click();
+          cy.wrap($button).click();
 
-      cy.get(".todo-item").should("have.length", countBefore);
+          cy.get(".todo-item").should("have.length", countBefore);
+        });
+      }
     });
   });
 
   // -------------------------
   // R8UC2 - Toggle Todo
+  // unchecked -> checked
   // -------------------------
-  it("R8UC2 - should toggle a todo item", () => {
+  it("R8UC2 - should toggle an unchecked todo item to checked", () => {
     createAndOpenTask();
 
     cy.get('input[placeholder="Add a new todo item"]').type("Toggle todo");
 
     cy.contains("Add").click();
+
+    cy.contains("Toggle todo")
+      .parents(".todo-item")
+      .find(".checker")
+      .should("have.class", "unchecked");
 
     cy.contains("Toggle todo").parents(".todo-item").find(".checker").click();
 
@@ -88,6 +104,38 @@ describe("R8 - Todo GUI Testing", () => {
       .parents(".todo-item")
       .find(".checker")
       .should("have.class", "checked");
+  });
+
+  // -------------------------
+  // R8UC2 - Alternative Scenario
+  // checked -> unchecked
+  // -------------------------
+  it("R8UC2 - should toggle a checked todo item back to unchecked", () => {
+    createAndOpenTask();
+
+    cy.get('input[placeholder="Add a new todo item"]').type("Toggle back todo");
+
+    cy.contains("Add").click();
+
+    cy.contains("Toggle back todo")
+      .parents(".todo-item")
+      .find(".checker")
+      .click();
+
+    cy.contains("Toggle back todo")
+      .parents(".todo-item")
+      .find(".checker")
+      .should("have.class", "checked");
+
+    cy.contains("Toggle back todo")
+      .parents(".todo-item")
+      .find(".checker")
+      .click();
+
+    cy.contains("Toggle back todo")
+      .parents(".todo-item")
+      .find(".checker")
+      .should("have.class", "unchecked");
   });
 
   // -------------------------
