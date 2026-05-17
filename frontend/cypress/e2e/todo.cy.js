@@ -96,3 +96,75 @@ describe('R8 – To-do management', () => {
       url: `http://localhost:5000/users/${uid}`,
     })
   })
+// ─── R8UC1 – Create a to-do item ───────────────────────────────────────────
+
+  describe('R8UC1 – Create a to-do item', () => {
+    it('TC1: creates a to-do item with a valid description', () => {
+      const description = 'Watch the introduction video'
+
+      cy.get('input[placeholder="Add a new todo item"]').type(description)
+      cy.contains('input[type=submit]', 'Add').click()
+
+      cy.get('.todo-list').should('contain.text', description)
+    })
+
+    it('TC2: does not add a to-do item when description is empty', () => {
+      cy.get('input[placeholder="Add a new todo item"]').clear()
+
+      cy.get('.todo-list li').then((listBefore) => {
+        const countBefore = listBefore.length
+        cy.get('.inline-form').submit()
+        cy.get('.todo-list li').should('have.length', countBefore)
+      })
+    })
+  })
+
+  // ─── R8UC2 – Toggle the done-state of a to-do item ─────────────────────────
+
+  describe('R8UC2 – Toggle the done-state of a to-do item', () => {
+    beforeEach(() => {
+      cy.get('input[placeholder="Add a new todo item"]').type('Toggle me')
+      cy.contains('input[type=submit]', 'Add').click()
+      cy.get('.todo-list').should('contain.text', 'Toggle me')
+    })
+
+    it('TC3: marks an undone item as done when its checker is clicked', () => {
+      cy.contains('.todo-item', 'Toggle me')
+        .find('.checker')
+        .should('have.class', 'unchecked')
+        .click()
+
+      cy.contains('.todo-item', 'Toggle me')
+        .find('.checker')
+        .should('have.class', 'checked')
+    })
+
+    it('TC4: unmarks a done item when its checker is clicked again', () => {
+      cy.contains('.todo-item', 'Toggle me').find('.checker').click()
+      cy.contains('.todo-item', 'Toggle me')
+        .find('.checker')
+        .should('have.class', 'checked')
+
+      cy.contains('.todo-item', 'Toggle me').find('.checker').click()
+      cy.contains('.todo-item', 'Toggle me')
+        .find('.checker')
+        .should('have.class', 'unchecked')
+    })
+  })
+
+  // ─── R8UC3 – Delete a to-do item ───────────────────────────────────────────
+
+  describe('R8UC3 – Delete a to-do item', () => {
+    it('TC5: removes a to-do item when the remove button is clicked', () => {
+      const description = 'Item to be deleted'
+
+      cy.get('input[placeholder="Add a new todo item"]').type(description)
+      cy.contains('input[type=submit]', 'Add').click()
+      cy.get('.todo-list').should('contain.text', description)
+
+      cy.contains('.todo-item', description).find('.remover').click()
+
+      cy.get('.todo-list').should('not.contain.text', description)
+    })
+  })
+})
