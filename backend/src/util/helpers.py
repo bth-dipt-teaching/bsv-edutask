@@ -11,8 +11,12 @@ def hasAttribute(obj: dict, attribute: str):
 
     returns:
         True -- if the dict contains the attribute as a key
-        False -- if the dict does not contain the attribute as a key or is None    
+        False -- if the dict does not contain the attribute as a key or is None
     """
+
+    if obj is None:
+        return False
+
     return (attribute in obj)
 
 class ValidationHelper:
@@ -30,13 +34,16 @@ class ValidationHelper:
             "valid" -- if the user is of age
             "underaged" -- otherwise
         """
+
         user = self.usercontroller.get(id=userid)
 
         if user['age'] < 0 or user['age'] > 120:
             return "invalid"
-        if user['age'] > 18:
-            return "valid"
-        return "underaged"
+
+        if user['age'] < 18:
+            return "underaged"
+
+        return "valid"
 
 class ValidationHelper2:
     def __init__(self):
@@ -64,14 +71,13 @@ class ValidationHelper2:
         return "underaged"
 
 def diceroll():
-    """Roll a simple six sided die and see if you win.
-
-    returns:
-        True -- if the rolled number is higher than a 4
-        False -- else
     """
+    Roll a simple six sided die and see if you win.
+    """
+
     number = random.randint(1, 6)
 
-    if number >= 4:
+    if number == 5 or number == 6:
         return True
+
     return False
