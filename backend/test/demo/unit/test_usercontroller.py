@@ -53,5 +53,5 @@ def test_no_users_found():
     controller = UserController(dao=mock_dao)
     mock_dao.find.return_value = []
     
-    results = controller.get_user_by_email("test@exaple.com")
+    result = controller.get_user_by_email("test@exaple.com")
     assert result is None  
