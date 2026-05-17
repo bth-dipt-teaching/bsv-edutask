@@ -1,0 +1,33 @@
+name: Backend Unit Tests
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.pip
+
+      - name: Run unit tests
+        working-directory: backend
+        env:
+          MONGO_URL: mongodb://localhost:27017
+        run: |
+          pytest test/ -v --tb=short --ignore=test/test_dao.py --ignore=test/demo
