@@ -36,3 +36,11 @@ frontend/cypress/e2e/r8uc1-solution.cy.js
 frontend/cypress/fixtures/task.json
 frontend/cypress/e2e/r8uc2-solution.cy.js
 frontend/cypress/e2e/r8uc3-solution.cy.js
+
+backend/venv/
+venv/
+backend/yay-git/
+__pycache__/
+*.pyc
+backend/.python-version
+backend/json

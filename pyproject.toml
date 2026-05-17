@@ -1,0 +1,18 @@
+[project]
+name = "edutask"
+version = "0.1.0"
+description = "Edutask backend and frontend training system"
+requires-python = ">=3.11"
+dependencies = [
+    "flask==2.2.3",
+    "flask-cors==3.0.10",
+    "Werkzeug==2.2.3",
+    "pymongo==4.4.0",
+    "python-dotenv==1.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==8.3.5",
+    "pytest-cov==6.1.0",
+]
