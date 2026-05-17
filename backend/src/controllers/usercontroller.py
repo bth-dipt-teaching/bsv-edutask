@@ -2,8 +2,7 @@ from src.controllers.controller import Controller
 from src.util.dao import DAO
 
 import re
-emailValidator = re.compile(r'.*@.*')
-
+emailValidator = re.compile(r'[^@\s]+@[^@\s]+\.[^@\s]+')
 class UserController(Controller):
     def __init__(self, dao: DAO):
         super().__init__(dao=dao)
