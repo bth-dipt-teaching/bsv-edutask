@@ -27,6 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pytest
+          pip install pymongo
 
       - name: Run tests
         run: |
