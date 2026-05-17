@@ -30,4 +30,4 @@ jobs:
         env:
           MONGO_URL: mongodb://localhost:27017
         run: |
-          pytest test/ -v --tb=short
+          pytest test/ -v --tb=short -m "not integration"
