@@ -69,7 +69,12 @@ describe('R8 - Todo item management on a task', () => {
     }
   })
 
-  it('TC-R8UC1-1: creates a todo item for an existing task', () => {
+  it('TC-R8UC1-ALT: keeps empty todo submissions unavailable', () => {
+    cy.get('input[placeholder="Add a new todo item"]').should('have.value', '')
+    cy.get('input[type="submit"][value="Add"]').should('be.disabled')
+  })
+
+  it('TC-R8UC1-MAIN: adds a todo with user-entered text', () => {
     const newTodo = 'Read the lecture slides'
 
     cy.intercept('POST', '**/todos/create').as('createTodo')
@@ -81,7 +86,7 @@ describe('R8 - Todo item management on a task', () => {
     cy.contains('li.todo-item', newTodo).should('be.visible')
   })
 
-  it('TC-R8UC2-1: toggles an unchecked todo item to checked', () => {
+  it('TC-R8UC2-MAIN: switches a todo to done and back again', () => {
     cy.intercept('PUT', '**/todos/byid/*').as('toggleTodo')
 
     cy.contains('li.todo-item', 'Watch video')
@@ -94,9 +99,19 @@ describe('R8 - Todo item management on a task', () => {
     cy.contains('li.todo-item', 'Watch video')
       .find('span.checker')
       .should('have.class', 'checked')
+
+    cy.contains('li.todo-item', 'Watch video')
+      .find('span.checker')
+      .click()
+
+    cy.wait('@toggleTodo')
+
+    cy.contains('li.todo-item', 'Watch video')
+      .find('span.checker')
+      .should('have.class', 'unchecked')
   })
 
-  it('TC-R8UC3-1: deletes a todo item from a task', () => {
+  it('TC-R8UC3-MAIN: removes an existing todo from the visible list', () => {
     cy.intercept('DELETE', '**/todos/byid/*').as('deleteTodo')
 
     cy.contains('li.todo-item', 'Watch video')
