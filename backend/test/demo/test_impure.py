@@ -11,13 +11,13 @@ def diceroll():
     """
     number = random.randint(1, 6)
 
-    if number >= 4:
+    if number >= 5:
         return True
     return False
 
 @pytest.mark.demo
 @pytest.mark.parametrize('value, expected', [(4, False), (5, True), (6, True)])
 def test_diceroll_success(value, expected):
-    with patch('random.randint') as mockrandint:
+    with patch('test.demo.test_impure.random.randint') as mockrandint:
         mockrandint.return_value = value
         assert diceroll() == expected

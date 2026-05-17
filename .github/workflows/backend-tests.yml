@@ -1,0 +1,36 @@
+name: Backend Unit Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install pytest
+          pip install pytest-cov
+          pip install pymongo
+          pip install python-dotenv
+
+      - name: Run Unit Tests
+        run: |
+          cd backend
+          pytest
