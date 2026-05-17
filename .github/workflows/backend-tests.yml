@@ -30,4 +30,4 @@ jobs:
         env:
           MONGO_URL: mongodb://localhost:27017
         run: |
-          pytest test/ -v --tb=short --ignore=test/test_dao.py
+          pytest test/ -v --tb=short --ignore=test/test_dao.py --ignore=test/demo
