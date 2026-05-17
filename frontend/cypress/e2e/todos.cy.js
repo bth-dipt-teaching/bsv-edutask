@@ -45,17 +45,20 @@ describe('Manipulating task todos', () => {
     }).then((response) => {
       user.id = response.body._id.$oid
 
+      const taskBody = new URLSearchParams()
+      taskBody.append('userid', user.id)
+      taskBody.append('title', task.title)
+      taskBody.append('description', task.description)
+      taskBody.append('url', task.url)
+      task.todos.forEach((todo) => taskBody.append('todos', todo))
+
       return cy.request({
         method: 'POST',
         url: `${apiUrl}/tasks/create`,
-        form: true,
-        body: {
-          userid: user.id,
-          title: task.title,
-          description: task.description,
-          url: task.url,
-          todos: task.todos
-        }
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        body: taskBody.toString()
       })
     })
   })
