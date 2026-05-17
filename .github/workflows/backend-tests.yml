@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+      - fix-user-email
+
   pull_request:
     branches:
       - master
