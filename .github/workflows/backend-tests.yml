@@ -1,32 +1,24 @@
 name: Backend Tests
 
-on:
-  push:
-    branches: [ master ]
-    branches: [ master ]
-
-  workflow_dispatch:
+on: push
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.10"
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        cd backend
-        pip install -r requirements.pip
+      - name: Install dependencies
+        run: |
+          pip install -r backend/requirement.pip 
 
-    - name: Run backend unit tests
-    
-      run: |
-        cd backend
-        pytest test/demo/unit
+      - name: Run tests
+        run: |
+          pytest  test/demo/unit
