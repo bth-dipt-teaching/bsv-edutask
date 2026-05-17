@@ -3,16 +3,15 @@ import random
 from unittest.mock import patch
 
 def diceroll():
-    """Roll a simple six sided die and see if you win.
-
-    returns:
-        True -- if the rolled number is higher than a 4
-        False -- else
     """
+    Roll a simple six sided die and see if you win.
+    """
+
     number = random.randint(1, 6)
 
-    if number >= 4:
+    if number == 5 or number == 6:
         return True
+
     return False
 
 @pytest.mark.demo
