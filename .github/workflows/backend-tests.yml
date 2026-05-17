@@ -29,4 +29,4 @@ jobs:
       - name: Run unit tests
         run: |
           cd backend
-          pytest tests/demo/unit
+          pytest test/demo/unit
