@@ -39,4 +39,4 @@ frontend/cypress/e2e/r8uc3-solution.cy.js
 frontend/cypress/screenshots/
 frontend/cypress/videos/
 
-/data/db_test
+/data/db-test
