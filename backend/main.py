@@ -35,7 +35,7 @@ def ping():
     return jsonify({'version': VERSION}), 200
 
 # simple population method that adds initial data to the database
-@app.route('/populate', methods=['POST'])
+@app.route('/populate', methods=['GET','POST'])
 @cross_origin()
 def populate():
     usercontroller = UserController(getDao(collection_name='user'))

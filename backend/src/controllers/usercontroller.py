@@ -9,33 +9,21 @@ class UserController(Controller):
         super().__init__(dao=dao)
 
     def get_user_by_email(self, email: str):
-        """Given a valid email address of an existing account, return the user object contained in the database associated 
-        to that user. For now, do not assume that the email attribute is unique. Additionally print a warning message containing the email
-        address if the search returns multiple users.
-        
-        parameters:
-            email -- an email address string 
-
-        returns:
-            user -- the user object associated to that email address (if multiple users are associated to that email: return the first one)
-            None -- if no user is associated to that email address
-
-        raises:
-            ValueError -- in case the email parameter is not valid (i.e., conforming <local-part>@<domain>.<host>)
-            Exception -- in case any database operation fails
-        """
-
-        if not re.fullmatch(emailValidator, email):
-            raise ValueError('Error: invalid email address')
+        # Venu: Refined regex to ensure standard <local-part>@<domain>.<host> format
+        # as required by the project specification
+        if not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            raise ValueError('Error: invalid email address format')
 
         try:
             users = self.dao.find({'email': email})
-            if len(users) == 1:
-                return users[0]
-            else:
-                print(f'Error: more than one user found with mail {email}')
-                return users[0]
+            if len(users) == 0:
+                return None
+            if len(users) > 1:
+                # Venu: Added clearer warning for non-unique email attributes
+                print(f'Warning: Multiple users ({len(users)}) found for email: {email}')
+            return users[0]
         except Exception as e:
+            print(f"Database operation failed: {e}")
             raise
 
     def update(self, id, data):
