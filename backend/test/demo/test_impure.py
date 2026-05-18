@@ -11,7 +11,7 @@ def diceroll():
     """
     number = random.randint(1, 6)
 
-    if number >= 4:
+    if number > 4:
         return True
     return False
 
