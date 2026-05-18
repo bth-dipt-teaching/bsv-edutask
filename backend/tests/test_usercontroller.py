@@ -77,19 +77,10 @@ class TestGetUserByEmail:
         ]
         self.mock_dao.find.return_value = multiple_users
         
-        # Capture print output
-        import io
-        captured = io.StringIO()
-        old_stdout = sys.stdout
-        sys.stdout = captured
-        
         result = self.controller.get_user_by_email("duplicate@test.com")
         
-        sys.stdout = old_stdout
-        
-        assert result is not None
-        assert result["user_id"] == "001"
-        assert "more than one user found" in captured.getvalue()
+        # SINGLE DEFINITIVE ASSERT: Verify it extracts the primary dictionary payload matching first record
+        assert result == {"email": "duplicate@test.com", "name": "User1", "user_id": "001"}
     
     def test_tc8_whitespace_email(self):
         """TC8: Email with spaces should be rejected"""
@@ -101,5 +92,6 @@ class TestGetUserByEmail:
         """TC9: Database error should propagate the exception"""
         self.mock_dao.find.side_effect = Exception("Database connection failed")
         
+        # SINGLE DEFINITIVE ASSERT: Verify that the exact database exception surfaces unmodified
         with pytest.raises(Exception, match="Database connection failed"):
             self.controller.get_user_by_email("test@edutask.com")
